@@ -1,0 +1,302 @@
+#english:
+#    PythonSf testOp.vrf
+#    https://github.com/lobosKobayashi
+#    http://lobosKobayashi.github.com/
+#    
+#    Copyright 2016, Kenji Kobayashi
+#    All test codes in this file was designed by kVerifierLab Kenji Kobayashi
+#
+#    I release souce codes in this file under the GPLv3
+#    with the exception of my commercial uses.
+#
+#    2016y 12m 28d Kenji Kokbayashi
+#
+#japanese:
+#    PythonSf testOp.vrf
+#    https://github.com/lobosKobayashi
+#    http://lobosKobayashi.github.com/
+#
+#    Copyright 2016, Kenji Kobayashi
+#    このファイルの全てのテスト・コードは kVerifierLab 小林憲次が作成しました。
+#    
+#    作成者の小林本人に限っては商用利用を許すとの例外条件を追加して、
+#    このファイルのソースを GPLv3 で公開します。
+#
+#    2016年 12月 28日 小林憲次
+
+# Cation! This test assumes to be executed by sfPPOp.py as "sfPPOp.py testOp"
+# Bug
+# 2015.04.19 SNb:00079: Python2.7.9 では shebang の位置が一行目に限定された
++1 calculateLineString __set "ustr=u'あ'; [hex(ord(ch)) for ch in ustr.encode('utf-8')]==['0xe3', '0x81', '0x82']"
++0 blStt               __compare True
+
+
+# Power and four operations of basic functions
+##  ditto operations of `X identical functions
+### check identities
++1 calculateLineString __set "`X(3)"
++0 inStt               __compare 3
+
++1 calculateLineString __set "type(`X(Z3(2)))==Z3"
++0 blStt               __compare True
++1 calculateLineString __set "`X(Z3(2))==Z3(2)"
++0 blStt               __compare True
++1 calculateLineString __set "type(`X(Z3(2)))==Z2"
++0 blStt               __compare False
++1 calculateLineString __set "`X(Z3(2))==Z2(2)"
++0 blStt               __compare False
++1 calculateLineString __set "`X(Z3(2))==Z5(2)"
++0 blStt               __compare True
+
+### check add with integer for `X
++1 calculateLineString __set "`X(3)"
++1 calculateLineString __set "(1+`X)(3)"
++0 inStt               __compare 4
++1 calculateLineString __set "(`X+2)(3)"
++0 inStt               __compare 5
++1 calculateLineString __set "`X([1,2,3])"
+
+### `X returns np.ndarray for tuple, list of numbers if it is executed through sfPPOp.py.
+### On the other hand sfPP.py returns a ClTensor instance.
++1 calculateLineString __set "type(`X([1,2,3])) == np.ndarray"
++0 blStt               __compare True
+
++1 calculateLineString __set "all((`X([1,2,3]) == [1,2,3]) == [True,True,True])"
++0 blStt               __compare True
+
+### `X(integer list or tuple) return float type np.ndarray, not integer type
++1 calculateLineString __set "`X([1,2,3]).dtype == np.float64"
++0 blStt               __compare True
+
+##  ditto operations of XX identical functions
+### combination of XX and Sb
++1 calculateLineString __set "XX(Sb(1,2,3,0)) == Sb(1,2,3,0)"
++0 blStt               __compare True
+
++1 calculateLineString __set "((XX**2)(Sb(1,2,3,0)))([10,11,12,13]) == [12,13,10,11]"
++0 blStt               __compare True
+
+### Error:exceptions
+#### because (XX**2)([10,11,12,13]) == XX([10,11,12,13])**2 == [10,11,12,13]**2
++1 calculateLineString __set "(XX**2)([10,11,12,13])"
++0 strExceptionStt     __compare "unsupported operand type(s) for ** or pow(): 'list' and 'int'"
+
+## composition of basic functions
+### ditto operations between absF and `X,`Y,`Z,`T
++1 calculateLineString __set "absF(`X)(2,3) == 2"
++0 blStt               __compare True
++1 calculateLineString __set "absF(`Y)(2,3) == 3"
++0 blStt               __compare True
++1 calculateLineString __set "absF(`Z)(2,3,4,5) == 4"
++0 blStt               __compare True
++1 calculateLineString __set "absF(`T)(2,3,4,5) == 5"
++0 blStt               __compare True
++1 calculateLineString __set "absF(`T)(2) == 2"
++0 blStt               __compare True
+
+# Algebra
+## Sb(..):Substitution: Permutation Group instances and Cy:cyclic substitution, group(..), kfs
+### Substitute sequence
+#### Exceptions
+##### Sb(...) can't substitute bigger size sequence
++1 calculateLineString __set "Sb(1,2,3,0)(range(3))"
++0 strExceptionStt     __compare "list index out of range"
+
+##### 2014.08.07 SN:00041 reverse the substitution by Sb.__call__
++1 calculateLineString __set "Sb(3,0,1,4,5,2)('abcdef') == 'bcfade'"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(3,0,1,4,5,2)('abcdefXYZ') == 'bcfadeXYZ'"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(3,0,1,4,5,2)((1,2,3,4,5,6))==(2,3,6,1,4,5)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(3,0,1,4,5,2)((1,2,3,4,5,6,7))==(2,3,6,1,4,5,7)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(3,0,1,4,5,2)(range(6))==[1,2,5,0,3,4]"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(3,0,1,4,5,2)(range(8))==[1,2,5,0,3,4,6,7]"
++0 blStt               __compare True
+
+## quaternion, octonion
+### floating quaternion, octonion
+### Z2,Z3,Z4,Z5,Z6,Z7,Zb  quaternions, octonions
+#### SNb:00082 O2 constructor dumped assert error
++1 calculateLineString __set "O2(3,4)[1]==Z2(0)"
++0 blStt               __compare True
+
+
+## Octonion
+#### Ob:Z127 octonion
+##### 2014.06.27 SN:00029 append Z127_octonion Ob to sfCrrntIni
++1 calculateLineString __set "Ob(10,20,30) 2 == Ob(20,40,60)"
++0 blStt               __compare True
++1 calculateLineString __set "Ob(1,2) Ob(3,4) == Ob(122, 10)"
++0 blStt               __compare True
++1 calculateLineString __set "Ob(1,2,3,0, 4,5,6,0) Ob(3,2,3,0, 8,5,7,0) == Ob( 18, 115, 119, 122,  17,  28,  37, 125)"
++0 blStt               __compare True
+##### 2014.06.29 SN:00022 error bug at O3 scalr multiplying O3 vector
++1 calculateLineString __set "a,b=O3(0, 1, 0, 1),kryO([O3(0, 0, 0, 2), O3(1, 2, 2, 0)]); all(a*b==kryO([O3(1,0,1,0),O3(1,2,2,0)]))"
++0 blStt               __compare True
++1 calculateLineString __set "(O3(1,2,3,4)*kryO([[1,2,3],[4,5,6]],int)).shape==(2,3)"
++0 blStt               __compare True
++1 calculateLineString __set "(O3(1,2,3,4)*kryO([[1,2,3],[4,5,6]],int))[1,1]==O3(2,1,0,2)"
++0 blStt               __compare True
+
+## RS:GF(2^8)
+##### 2017.01.01 SNb:-----: oc.RS(-1) == oc.RS(0xFF) になっていた
+##### 2017.01.01 SNb:-----: coded as oc.RS(-1) == oc.RS(0xFF)
+##### 2014.12.26 SNb:00074 : 0.97B?:narrowed Sb.__equ__ True objects
++1 calculateLineString __set "oc.RS(-1) == oc.RS(0xFF)"
++0 blStt               __compare False
++1 calculateLineString __set "oc.RS(-1) == oc.RS(1)"
++0 blStt               __compare True
+
+##### 2014.06.29 SN:00027 append __lt__ to RS class
++1 calculateLineString __set "RS=oc.RS; kfs([RS(0x3e), RS(4), RS(0x1c), RS(7)]).sl[0]==RS(4)"
++0 blStt               __compare True
+
+
+
+# test pysfOp/basicFnctnsOp.py
+##### test mitr
+###### iterator argments
++1 calculateLineString __set "itr=mitr(3); [(v0,v1) for v0,v1 in mitr(itr,itr)][8]==(2,2)"
++0 blStt               __compare True
++1 calculateLineString __set "X,Y=xrange(4,6),xrange(6,8); list(mitr(mitr(X,X), mitr(Y,Y)))[15]==((5, 5), (7, 7))"
++0 blStt               __compare True
++1 calculateLineString __set "X,Y=xrange(4,6),xrange(6,8); list(enmitr(mitr(X,X), mitr(Y,Y)))[15]==((3, 3), ((5, 5), (7, 7)))"
++0 blStt               __compare True
++1 calculateLineString __set "X,Y={4,5},{6,7,8}; len([(f,g) for f,g in mitr(mitr(X,X,X),mitr(Y,Y,Y))]) == 216"
++0 blStt               __compare True
+## ついでに prdct = itertools.product を追加する
++1 calculateLineString __set "X,Y=xrange(4,6),xrange(6,8); list(prdct(prdct(X,X), prdct(Y,Y)))[15]== ((5, 5), (7, 7))"
++0 blStt               __compare True
+
+# test pysfOp/kNumericOp.py
+### test quad
+##### test quadR(..)
++1 calculateLineString __set "quadR(exp(-`X**2), -sc.inf, sc.inf)"
++0 scalarStt           __compare 1.77245385091
+
+##### test quadC(..)
+##### yet implemented
+
+##### norm(..)
++1 calculateLineString __set "norm([3,4]) == 5"
++0 blStt               __compare True
+
+##### fftshift, ifftshift
++1 calculateLineString __set "v=fftshift([1,2,3,4,5]); (norm(v - [4,5,1,2,3])==0) and isinstance(v,np.ndarray)"
++0 blStt               __compare True
+
++1 calculateLineString __set "v=ifftshift([1,2,3,4,5]); (norm(v - [3,4,5,1,2])==0) and isinstance(v,np.ndarray)"
++0 blStt               __compare True
+
+##### randint(..) SNb:00047 closed: 0.97B?: At PythonSfOp randint didn't work:2014/08/
++1 calculateLineString __set "len(randint(10,size=3)) == 3"
++0 blStt               __compare True
+
+##### 2014.11.02 SNf:00033 SNf:00032: add randi(..) to symplify calling randint(..) date:2014/06/30 (月) time:08:41
++1 calculateLineString __set "seed(0); x=randi(10); x<10 and isinstance(x, int)"
++0 blStt               __compare True
++1 calculateLineString __set "seed(0); x=randi(5,10); 5<=x<10 and isinstance(x, int)"
++0 blStt               __compare True
++1 calculateLineString __set "seed(0); v=randi(10, [5]); all(v<10) and v.shape==(5,) and isinstance(v, np.ndarray)"
++0 blStt               __compare True
++1 calculateLineString __set "seed(0); v=randi(5,10, [5]); all(5<=v) and all(v<10) and v.shape==(5,) and isinstance(v, np.ndarray)"
++0 blStt               __compare True
++1 calculateLineString __set "seed(0); mt=randi(10, [3,5]); np.alltrue(mt<10) and mt.shape==(3,5) and isinstance(mt, np.ndarray)"
++0 blStt               __compare True
++1 calculateLineString __set "seed(0); mt=randi(5,10, [3,5]); np.alltrue(5<=mt) and np.alltrue(mt<10) and mt.shape==(3,5)"
++0 blStt               __compare True
++1 calculateLineString __set "seed(0); mt=randi(5,10, size=[3,5]); np.alltrue(5<=mt) and np.alltrue(mt<10) and mt.shape==(3,5)"
++0 blStt               __compare True
+
+##### 2014.09.10 SN:00050 append pp(.) function
++1 calculateLineString __set "pp(`σx)"
+
+
+# test pysfOp/ptGrpOp.py
+##### extending action by default *
++1 calculateLineString __set "extend([Cy(0,1), Cy(0,1,2)])==kfs(Sb(0,1), Sb(1,0), Sb(0,2,1), Sb(1,2,0), Sb(2,0,1), Sb(2,1,0))"
++0 blStt               __compare True
++1 calculateLineString __set "ar=[Z5(4)]; extend(ar)==kfs(1, 4)"
++0 blStt               __compare True
++1 calculateLineString __set "extend([kfs(0,1),kfs(1,2),kfs(2,3)]) == kfs(kfs(), kfs(0, 1), kfs(1), kfs(1, 2), kfs(2), kfs(2, 3))"
++0 blStt               __compare True
+
+##### extending action by default +
++1 calculateLineString __set "ar=[Z5(4)]; extend(ar,λ x,y:x+y)==kfs(0, 1, 2, 3, 4)"
++0 blStt               __compare True
++1 calculateLineString __set "extend([kfs(0,1),kfs(1,2),kfs(2,3)],λ x,y:x+y) == kfs(kfs(0, 1), kfs(0, 1, 2), kfs(0, 1, 2, 3), kfs(1, 2), kfs(1, 2, 3), kfs(2, 3))"
++0 blStt               __compare True
++1 calculateLineString __set "extend(extend([kfs(0,1),kfs(1,2),kfs(2,3)]), λ x,y:x+y) == kfs(kfs(), kfs(0, 1), kfs(0, 1, 2), kfs(0, 1, 2, 3), kfs(1), kfs(1, 2), kfs(1, 2, 3), kfs(2), kfs(2, 3))"
++0 blStt               __compare True
+
+# 2014.12.26 SNb:00074 : 0.97B?:narrowed Sb.__equ__ True objects
++1 calculateLineString __set "Sb(0,1)==(0,1)"
++0 blStt               __compare False
++1 calculateLineString __set "Sb(1,0) == Sb(0,1)"
++0 blStt               __compare False
++1 calculateLineString __set "Sb(0,1)!=(0,1)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(0,1) == Sb(0,1)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(0,1) == Sb(0,1,2)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(1,0) == Sb(1,0,2)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(1,0,2) == Sb(1,0)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(1,0) == Sb(0,1,2)"
++0 blStt               __compare False
++1 calculateLineString __set "Sb(1,0,2) == Sb(0,1)"
++0 blStt               __compare False
+
+
+# test pysfOp/rationalOp.py
+##### ClRtnl
++1 calculateLineString __set "z=`s; F=1/(1-0.5*z^-1); G=(F*F); norm(G.getDgRspns([1]+[0]*9)- G.getDgImpls()[:10])<1e-7"
++0 blStt               __compare True
+
+# test pysfOp/vsGraphOp.py
+##### 2014.09.24 SNf:00054 add plotDbl(..)
+#+1 calculateLineString __set "arF=fft(range(10)); plotDbl(arF.real, arF.imag);vs.scene.visible=0;0==0"
++1 calculateLineString __set "plotDbl; 0==0"
++0 blStt               __compare True
+
+# sfCrrntIniOp.py
+##### SNf:00039 closed: 0.97B?: add alias label _.f _.l for _.fst _.lst at CT class
++1 calculateLineString __set "f=f2CT(λ x,y:x+y, Z5); f.f(Z5(1))(Z5(2))==f.fst(Z5(1))(Z5(2))==Z5(3)"
++0 blStt               __compare True
++1 calculateLineString __set "f=f2CT(λ x,y:x+y, Z5); f.l(Z5(1))(Z5(2))==f.lst(Z5(1))(Z5(2))==Z5(3)"
++0 blStt               __compare True
+##### 2014.11.13 SNb:00068 : 0.97B?: cmps in sfCrrntIni.py have a mulfunction for the None parameter
++1 calculateLineString __set "f=λ x,y:x*y ; fn=f2CT(f); a,b,x=2,1,3; cmps(fn.fst(a), fn.fst(b))(x) == 6"
++0 blStt               __compare True
+
+
+# bug 対策 serise
+##### f=`X(Sb(0,2,1)); f([1,2,3]) #date:2013/03/30 (土) time:22:12
+#####  File "pysfOp\basicFnctnsOp.py", line 925, in __f
+#####    return self.m_fn(ag[0](sf.krry(x[0])))
+#####AttributeError: 'module' object has no attribute 'krry'
+#####Cation! f([1,2,3]) returns np.array([1,2,3])
+#####+1 calculateLineString __set "f=`X(Sb(0,2,1)); all(f([1,2,3]) == [1., 3., 2. ])"
+#####↑f([1,2,3]) returns list [1,2,3]
++1 calculateLineString __set "f=`X(Sb(0,2,1));    (f([1,2,3]) == [1., 3., 2. ])"
++0 blStt               __compare True
++1 __end
+
++1 calculateLineString __set ""
++0 blStt               __compare True
+
+
+# test units
+##### SNf:00075 add modified nutural unit Heviside-Lorentz and pQ elementary charge
++1 calculateLineString __set "ts(); pQ` == -eQ`"
++0 blStt               __compare True
++1 calculateLineString __set "ts(); T`  == V` * s`/m`^2"
++0 blStt               __compare True
+
+
+

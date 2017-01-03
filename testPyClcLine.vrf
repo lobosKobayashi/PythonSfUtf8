@@ -1,0 +1,502 @@
+#english:
+#    PythonSf testPyClcLine.vrf
+#    https://github.com/lobosKobayashi
+#    http://lobosKobayashi.github.com/
+#    
+#    Copyright 2016, Kenji Kobayashi
+#    All test codes in this file was designed by kVerifierLab Kenji Kobayashi
+#
+#    I release souce codes in this file under the GPLv3
+#    with the exception of my commercial uses.
+#
+#    2016y 12m 28d Kenji Kokbayashi
+#
+#japanese:
+#    PythonSf testPyClcLine.vrf
+#    https://github.com/lobosKobayashi
+#    http://lobosKobayashi.github.com/
+#
+#    Copyright 2016, Kenji Kobayashi
+#    このファイルの全てのテスト・コードは kVerifierLab 小林憲次が作成しました。
+#    
+#    作成者の小林本人に限っては商用利用を許すとの例外条件を追加して、
+#    このファイルのソースを GPLv3 で公開します。
+#
+#    2016年 12月 28日 小林憲次
+
+# 13.10.05 add .d member to ClAF
+## Ticket Serial Num: 00007
++1 calculateLineString __set "exp.d(`i pi/3) ~== (cos + `i sin).d(pi/3)"
++0 blStt               __compare True
++1 calculateLineString __set "u=exp(`i `X); u.d(pi/3) ~== (0.5-`i sqrt(3)/2)"
++0 blStt               __compare True
+
+# 09.10.07 user operator の riht term を recursive にも扱えるようにした
+#//@@
+#import pysf.sfPPrcssr as md
+#print  md.parseUsOp("3 ~+ 'abcdefg'[1:3] * c")
+#//@@@
+#k__tilda__UsOp_add____(3 , 'abcdefg')[1:3] * c
+#k__tilda__UsOp_add____(3 , 'abcdefg'[1:3]) * c こっちが正しいが、さぼる
+# <== ここまでは使わないから
+
++1 calculateLineString __set "import pysf.sfPPrcssr as md; md.parseUsOp('3 ~* [1 ~* 2]')"
++0 strStt              __compare "k__tilda__UsOp_mul____(3 , [k__tilda__UsOp_mul____(1 , 2)])"
+
+#+1 calculateLineString __set "import pysf.sfPPrcssr as md; md.parseUsOp('3 ~+ [1 ~+ 2]')"
+#+0 strStt              __compare "k__tilda__UsOp_add____(3 , [k__tilda__UsOp_add____(1 , 2)])"
+
++1 calculateLineString __set "import pysf.sfPPrcssr as md; md.parseUsOp(' 3 ~* g(1,[ f(1), 0])')"
++0 strStt              __compare " k__tilda__UsOp_mul____(3 , g(1,[ f(1), 0]))"
+
+#+1 calculateLineString __set "import pysf.sfPPrcssr as md; md.parseUsOp(' 3 ~+ g(1,[ f(1), 0])')"
+#+0 strStt              __compare " k__tilda__UsOp_add____(3 , g(1,[ f(1), 0]))"
+
++1 calculateLineString __set "import pysf.sfPPrcssr as md; md.parseUsOp(' 3 ~* g(1,2)')"
++0 strStt              __compare " k__tilda__UsOp_mul____(3 , g(1,2))"
+
+#+1 calculateLineString __set "import pysf.sfPPrcssr as md; md.parseUsOp(' 3 ~+ g(1,2)')"
+#+0 strStt              __compare " k__tilda__UsOp_add____(3 , g(1,2))"
+
++1 calculateLineString __set "s=[0,1,2];T =[`σx/2,`σy/2,`σz/2]; (T[s[0]]) ~^ (T[s[1]])[1,1] == -0.5j"
++0 blStt               __compare True
+
++1 calculateLineString __set "(krry([[1,2],[3,4]]) ~^ krry([[0,1],[1,1]]))[0,0] == -1"
++0 blStt               __compare True
+
++1 calculateLineString __set "`σx[0,0] ~^ `σy[0,1]"
++0 scalarStt              __compare 0
+
+# 08.03.18 user operator extention
+#+1 calculateLineString __set "k__tilda__UsOp_add____ = lambda x,y:x+y; None"
+#+1 calculateLineString __set "k__tilda__UsOp_add____ = lambda x,y:x+y" とすると最終文の扱いで k__tilda__UsOp_add____ グローバル変数が作られない。 代わりに pvl ファイルを作る。
+#+1 calculateLineString __set "3 ~+ 4"
+#+0 inStt           __compare   7
+
+
+#09.04.20 「`σx[0,0] ~^ `σy[0,1]」 を -fs ファイル変換させると
+# k__bq__sSigma_k__tilda__UsOp_xor_______(x[0,0] , k__bq____)* k__sSigma_y___[0,1]
+#になっていた
++1 __makeFile __tmp r"""'
+`σx[0,0] ~^ `σy[0,1]\n
+'"""
++1 converFileAndStore   __set "__tmp"
+
++1 __chkFlLn _tmC.py[7] r"k__tilda__UsOp_xor____(k__bq__sSigma_x___[0,0] , k__bq__sSigma_y___[0,1])\n"
+
+#08.11.12 下で飛ぶ += など operator= を operator 扱いせずに assign 記号にしているため
+#次回のファイルに変数バージョンでは、下の sf コマンドはエラーにする
+#<== 最終行が statement になっているからです。expression ではないからです。
+#+1 calculateLineString __set "a=3;a~=1"
+#+1 calculateLineString __set "a=3;a^=1"
+#+1 calculateLineString __set "a=3;a+=1"
+#+1 calculateLineString __set "a=3;a-=1"
+#+1 calculateLineString __set "a=3;a*=1"
+#+1 calculateLineString __set "a=3;a/=1"
+#+1 calculateLineString __set "a=3;a%=1"
+#+1 calculateLineString __set "a=3;a|=1"
+#+1 calculateLineString __set "a=3;a<=1"
+#+1 calculateLineString __set "a=3;a>=1"
+
+# 09.01.08  := の左値がギリシャ文字変数のとき、
+#「NameError: name 'k__sPsi_m___' is not defined」になっていた
++1 calculateLineString __set "ψ:=3; ψ 2"
++0 inStt               __compare 6
+
+# 09.01.08 二つの =: 構文があると 「AssertionError: At ... =: ..., ther is a mismatch in count.」になっていた
++1 calculateLineString __set "test:=3"
++1 calculateLineString __set "t=:test; temp=:test; 2 t"
++0 inStt               __compare 6
+
+#08.11.12 下で、飛んでいた。 <, > を operator にしていなかったため
++1 calculateLineString __set "3 <= 3"
++0 blStt               __compare True
+
+# ===================== ループ・停止 エラー begin ===================
+# __compare のない behavior sciprts
+# 08.03.01 下の文で __repr__(..) の無限ループになっていた
++1 calculateLineString __set "lstAt=[1,2,3]; import pprint as pp;pp.pprint( krry(lstAt, dtype=type(lstAt[0])) )"
+
+
+# 08.02.29 下の文で ClRtnl オブジェクトが unpickable であり、エラー停止していた
++1 calculateLineString __set "ClRtnl([1,2],[2,3,4])"
+
+# 08.02.25 下の文で python 構文エラーになって止まっていた
++1 __makeFile temp r"""'
+print 3+4\
+    + 5+6
+'"""
++1 converFileAndExecute __set "temp"
+
+# 08.02.24 下の文で False になっていた
++1 calculateLineString __set "ustAt = u'小林'; isinstance(ustAt, unicode)"
++0 blStt           __compare True
+
+# 08.02.24 下の文で hung up および文法エラーが発生した
++1 calculateLineString __set "assert 3==3"
++1 calculateLineString __set "x= 1;print 'x:', x"
+# ===================== ループ・停止 エラー end ===================
+# 08.11.18 label1, label2, ...  =: fileVar1, fileVa2,... の記述を可能にした。
++1 calculateLineString __set "test:=3;test2:=7"
++1 calculateLineString __set "x,y =: test, test2; x+y"
++0 inStt               __compare 10
+
+# 08.11.01 ;; "ls=[0,1,1,2];def fib(i):return (ls[0],);fib(3)" で
+#    if (lstRhElAt[-1].m_enKind == 'EnComma'):
+#IndexError: list index out of range となっていた
++1 calculateLineString __set "ls=[0,1,1,2];def fib(i):return (ls[0],);krry(fib(3))"
++0 krryStt            __compare   [0]
+
+# 08.11.01 ;; "=:φ" で k__sPhi____ から読み出していた
++1 calculateLineString __set "φ:= 3"
++1 calculateLineString __set "=:φ; 2 φ"
++0 inStt            __compare   6
+
+# 08.10.22 ;; "mt =~[ [1,2],[3,4]];a=~[2,3]; 1/mt" と array 演算になっていた
++1 calculateLineString __set "mt =~[ [1,2],[3,4]];a=~[2,3]; (1/mt)[1,0]"
++0 scalarStt           __compare   1.5
+
+# 08.10.18 ;; "a=2; e:=7;a e" を実行すると 
+#「IndexError: list index out of range」エラーになっていた
++1 calculateLineString __set "a=2;;e=7;a e"
++0 inStt            __compare   14
++1 calculateLineString __set "a=2; e:=7;a e"
++0 inStt            __compare   14
+
+# 08.10.17 ;; "p:=13;q:=17;n:=p*q;n`:=(p-1)*(q-1)" と "=: p,q,n,n`;n`" を実行すると 
+#「NameError: name 'k_n_bq____' is not defined」になっていた
++1 calculateLineString __set "p:=13;q:=17;n:=p*q;n`:=(p-1)*(q-1)"
++1 calculateLineString __set "=: p,q,n,n`;n`"
++0 inStt            __compare   192
+
+# 08.10.17 ;; p:=13;q:=17; p が IndexError: list index out of range になっていた
++1 calculateLineString __set "p:=13;q:=17; p"
++0 inStt            __compare   13
+
+# 08.09.19 ;; ビット反転演算子 \~3 が AssertionError: We detect unexpected ~ at:\~3 エラーになっていた
++1 calculateLineString __set "\~3"
++0 inStt            __compare   -4
+
+# 08.08.31 ;; 3sqrt(4) が 3* sqrt* (4) に変換されていた
++1 calculateLineString __set "3sqrt(4)"
++0 scalarStt           __compare   6
+
+# 08.08.25 ;;(`σx ~^ `σz) が '`\x83\xd0k__tilda__UsOp_xor____.pvl' なしエラーだった
+#+1 calculateLineString __set "(`σx ~^ `σz)[0,0,0,:]"
+# 08.11.13 a ~^ b を a * b - b * a に変更した
++1 calculateLineString __set "((`σx ^ `σz) - (`σz ^ `σx))[0,0,0,:]== ~[0,-1]"
++0 blStt               __compare True
+
+
+# 08.08.22 ;;n=3;(n+1)2 === (n+1)*2 == 6
++1 calculateLineString __set "n=3;(n+1)2"
++0 inStt           __compare   8
+
+# 08.08.11 
+#map(λ tp:tp+2, [1,2,3] )
+#IOError:You request nonexistent variable name:[Errno 2] No such file or directory: 'tp.pvl'
++1 calculateLineString __set "map(λ tp:tp+2, [1,2,3] )[0]"
++0 inStt           __compare   3
+
+# 08.07.17 λ:lamba を追加した。lamda が予約語であるため、sfCrrntIni.py 側では設定できない
++1 calculateLineString __set "(λ x:x*2)(3)"
++0 inStt           __compare   6
+
+# 08.07.17 krry(complex dictionary) で integer krry を作り飛んでいた
+# <== dctAt[0]=1;dctAt[1]=2.3j と混同しないこと
++1 calculateLineString __set "dctAt={}; dctAt[0,0]=1;dctAt[0,1]=2.3j;krry(dctAt)"
++0 krryStt         __compare [[ 1.+0j,   0+2.3j]]
+# 08.07.17 krry(float dictionary) で integer krry を作り飛んでいた
++1 calculateLineString __set "dctAt={}; dctAt[0,0]=1;dctAt[0,1]=2.3;krry(dctAt)"
++0 krryStt         __compare [[ 1.,   2.3]]
+
+
+
+# 08.04.12 "class ClTest(int):pass; ClTest(3)" で No such file or directory: 'ClTest.pvl' になった
++1 calculateLineString __set "class ClTest(int):pass; ClTest(3)"
++0 inStt           __compare   3
+
+# 08.04.12 "(3)2" で SyntaxError: unexpected EOF while parsing になった
++1 calculateLineString __set "(3)2"
++0 inStt           __compare   6
+
+# 08.04.12 "[(p) for p in range(3)]" で括弧の中に for...in 変数をリカーシブに
+# 辿らせていなかったので下のエラーになっていた
+#IOError:You request nonexistent variable name:[Errno 2] No such file or directory: 'p.pvl'
++1 calculateLineString __set "[(p) for p in range(3)]"
++0 checkVal            __set "[0,1,2]"
+
+# 08.04.01 dctAt={3:'X'};dctAt[3]='a' が set に誤ってエラーになっていた
++1 calculateLineString __set "dctAt={3:'X'};dctAt[3]='a';dctAt[3]"
++0 checkVal            __set "'a'"
+
+# 08.04.01 リスト内包表記でもファイル変数を使えるように対策した
+#+1 calculateLineString __set "temp = 1"
+# 上の test=1 では global 変数の test ができてしまい、後ろのテスト行に影響を与
+#える。対策のために下の _makeFile によるテストにする
+##+1 __makeFile temp.pvl r"""'
+### python object printed out by pprint
+##1
+##'"""
+##+1 calculateLineString __set "[x+temp for x in range(4)]"
+##+0 checkVal            __set "[1,2,3,4,]"
+##
+##+1 calculateLineString __set "[x+temp+i for x,i in enumerate(range(4))]"
+##+0 checkVal            __set "[1,3,5,7,]"
+##
+##+1 calculateLineString __set "list((x+temp+i for x,i in enumerate(range(4))))"
+##+0 checkVal            __set "[1,3,5,7,]"
+## 08.09.29 ファイル変数を =: で明示的にグローバル変数に追加するように仕様変更した
+
+# 08.03.27 左値式を行列要素としたときファイル変数が旨く作れない
++1 calculateLineString __set "test:=kzrs(4,4)"
++1 calculateLineString __set "=:test;test[0,:] = [1,0,0,0]; test := test"
++0 __chkFlLn   test.pvl[1]  "ClTensor([[ 1.,  0.,  0.,  0.],"
+
+# 08.03.21 user operator extention with (...) term
+#+1 calculateLineString __set "a=~[1,2,3]; c=~[4,5,6]; ((a) ~^ c)"
+# 08.11.13 a ~^ b を a * b - b * a に変更した
++1 calculateLineString __set "a=~[1,2,3]; c=~[4,5,6]; `Λ((a), c)"
++0 krryStt         __compare [[0,-3,-6],[3,0,-3],[6,3,0]]
+
+
+# 08.03.20 user operator extention
+#+1 calculateLineString __set "dx=~[1,0,0]; dy=~[0,1,0]; dz = ~[0,0,1]; (dx ~^ dy ~^ dz)[0]"
+# 08.11.13 a ~^ b を a * b - b * a に変更した
+#+1 calculateLineString __set "dx=~[1,0,0]; dy=~[0,1,0]; dz = ~[0,0,1];`Λ(`Λ(dx, dy), dz)[0]"
+#+0 krryStt         __compare [[0,0,0],[0,0,1],[0,0,0]]
+
+# 08.03.19 user operator extention
+#+1 calculateLineString __set "~[1,2,4] ~^ [4,5,6]"
+# 08.11.13 a ~^ b を a * b - b * a に変更した
++1 calculateLineString __set "`Λ(~[1,2,4], [4,5,6])"
++0 krryStt         __compare [[0,-3,-10],[3,0,-8],[10,8,0]]
+
+
+# 08.03.14 下の文で、コメント:# の後ろ側も parse していた
++1 __makeFile temp r"""'
+#def Λ(
+
+print ~[1,2,3] ^ [4,5,5]
+'"""
++1 converFileAndExecute __set "temp"
+
+# 08.03.13 2pi で 2*pi とするようにした
++1 calculateLineString __set "2pi"
++0 scalarStt     __compare   6.28318530718
+
++1 calculateLineString __set "2pi"
++0 scalarStt     __compare   6.28318530718
+
+# 08.03.11 kzrs(3,2,1) を pprint するときエラー停止した
++1 calculateLineString __set "kzrs(3,2,1)"
++0 __chkFlLn   _dt.pvl[7]  "           [[ 0.],"
+
+# 08.03.04 下のコメント文字にある vector 変数を探そうとした、エラー停止した
++1 calculateLineString __set "~[1,2,3] # vector/matrix"
+
+# 08.03.01 有理関数：ClRtnl のファイル変数扱いを可能にした
++1 calculateLineString __set "test:=ClRtnl([1,2],[2,3,4])"
++0 __chkFlLn   test.pvl[1]  "ClRtnl( [ 0.5,  1. ], [ 1. ,  1.5,  2. ])"
+# ×08.11.10 ClRtnl は pickle 保存に変更した
+#   <== scipy.poly1d が pickle 保存できないので ClRtnl も pprint 保存にするしかない
+#+1 calculateLineString __set "test=:; test.m_plNumer.coeffs"
+#+0 krryStt         __compare [ 0.5,  1. ]
+
+# 08.03.01 多項式：poly1d のファイル変数扱いを可能にした
++1 calculateLineString __set "test:=poly1d([1,2,3])"
++0 __chkFlLn   test.pvl[1]  "poly1d(sc.array([1, 2, 3]))"
+
+# 08.02.23 (2 pi) と括弧を付けると operator:* が挿入されなかった
++1 calculateLineString __set "(2 pi)"
++0 scalarStt     __compare   6.2831853
+
+# 08.02.18 ギリシャ文字でファイル変数を作っていなかった。
++1 calculateLineString __set "ω:= 1"
++0 __chkFlLn   ω.pvl[1]  "1"
+# 08.02.18
++1 calculateLineString __set "test := kzrs(4,3)"
++0 __chkFlLn   test.pvl[1]  """'
+ClTensor([[ 0.,  0.,  0.],
+'"""
++1 calculateLineString __set "=:test; test[0,1] = 2; test:=test"
++0 __chkFlLn   test.pvl[1]  """'
+ClTensor([[ 0.,  2.,  0.],
+'"""
+
+# 08.02.17 dtype.pvl を HDD から読み出そうとしていた
++1 calculateLineString __set "krry([1,2], dtype = complex)"
++1 __chkFlLn _dt.pvl[1] """'
+ClTensor([ 1.+0.j,  2.+0.j], dtype=complex)
+'"""
+
+# 08.02.13 spec 浮動小数点の嫌らしいパターン
++1 calculateLineString __set ".123e-2"
++0 scalarStt     __compare   0.00123
++1 calculateLineString __set "345l*2"
++0 inStt            __compare 690
++1 calculateLineString __set "345L*2"
++0 inStt            __compare 690
+
+# 08.02.16 i をファイル変数としてカレントディレクトリから読み出そうとした
++1 calculateLineString __set "[i for i in range(3)]"
++0 checkVal            __set "[0,1,2]"
+
+# 08.02.15 下で無限ループに入っていた
+# 10.03.20 comb(..) 関数は scipy にはあるが、numpy にはない
+#+1 calculateLineString __set "bool(sc.comb(5, 3) == sc.comb(5, 2))"
+#+0 blStt           __compare True
+
+# 08.02.15 import, as, for, lambda, def を含む行はファイル変数の dump/load を行わない
++1 calculateLineString __set "import kre as re; ('_'/re.krgl('\w')).m_posEnd"
++0 inStt            __compare   1
+
+# 08.02.13 EnBackslashSpace は積にならずに単純な space にする
++1 calculateLineString __set "sin\ (pi)"
++0 scalarStt     __compare   0.0
+
+
+# 08.02.12 spec hex/long 数値を受け付けねばならない
++1 calculateLineString __set "0x10*2"
++0 inStt            __compare 32
+
+# 08.02.10 下で x.pvl を作っていなかった
+##+1 calculateLineString __set "N=10;x=krry(arange(0,N,2))"
+##+1 __chkFlLn x.pvl[1] "krry([                0,                 2,                 4,                 6,                 8], dtype = scipy.float64)"
+## 08.09.29 ファイル変数を =: で明示的にグローバル変数に追加するように仕様変更した
+
+# 08.02.09 ファイルへの自動書き込みが働いていない
+##+1 calculateLineString __set "s = 3"
+##+1 calculateLineString __set "s + 3"
+##+0 inStt            __compare 6
+## 08.09.29 ファイル変数を =: で明示的にグローバル変数に追加するように仕様変更した
+
+# 08.02.08 __makeFile を実装した
++1 __makeFile test.pvl """'
+abc
+def
+ABC
+DEF
+'"""
++1 __chkFlLn test.pvl[:2] """'
+abc
+def
+'"""
+
++1 __makeFile test.pvl """'
+# python object printed out by pprint
+[3,4,5]
+'"""
++1 __chkFlLn test.pvl[1] """'
+[3,4,5]
+'"""
++1 __chkFlLn test.pvl[1] "[3,4,5]"
++1 __chkFlLn test.pvl[0] r"# python object printed out by pprint"
+
++1 __chkFlLn test.pvl[0:] """'
+# python object printed out by pprint
+[3,4,5]
+'"""
+
++1 __chkFlLn test.pvl """'
+# python object printed out by pprint
+[3,4,5]
+'"""
++1 __makeFile test.pvl """'
+# python object printed out by pprint
+abc\nABC
+'"""
+#+1 __chkFlLn test.pvl[1] "abc\nABC"    # devided by \n
++1 __chkFlLn test.pvl[1] "abc"
++1 __chkFlLn test.pvl[2] "ABC"
+#+1 __chkFlLn test.pvl[1] "ABC"     # !! error check
+
+
+# 08.02.07 下の式で _dt.pvl が作られなかった
++1 calculateLineString __set "strAt='abcdefg'; strAt[-3:]"
++0 __chkFlLn   _dt.pvl[1]  "'efg'"
+
+# 08.02.07 下の式で left hand side value: s.pvl を読み込もうとした
++1 calculateLineString __set "s = 3"
++0 inStt            __compare 3
+
+# 08.02.04 short cut krry description:tildaSquareBracket ~[....] を実装した
++1 calculateLineString __set "vt = ~[1,2,3]; vt*2"
++0 krryStt         __compare   [2,4,6]
+
++1 calculateLineString __set "2 ~[1,2,3]"
++0 krryStt         __compare   [2,4,6]
+
+# 08.02.03 put/getPv(..) を実装した
++1 calculateLineString __set "mt = krry(1,pi,3); putPv(mt, 'test'); mt = getPv('test'); mt[2]"
++0 scalarStt     __compare   3
+
++1 calculateLineString __set "mt = krry(1,pi,3); putPv(mt, 'test'); mt = getPv('test'); mt"
++0 krryStt          __compare [1, 3.14159265, 3]
+
+# 08.01.31 {..} によるテンソルの縮約を実装した
++1 calculateLineString __set "(krry(1,2,3) ^ [4,5,6])[{0,1}]"
++0 scalarStt     __compare 32
+
++1 calculateLineString __set "`εL* [1,2,3] * [4,5,6]"
++0 krryStt         __compare [  3, -6,  3 ]
+
++1 calculateLineString __set "`εL (1,2,3) [4,5,6]"
++0 krryStt         __compare [  3, -6,  3 ]
+
++1 calculateLineString __set "krry(1,2)^ [3,4]"
++0 krryStt         __compare [[3,4],[6,8]]
+
++1 calculateLineString __set "krry(1,2) ** [3,4]"
++0 krryStt         __compare [[3,4],[6,8]]
+
+# 08.01.30 krry(1,2) \^ [3,4] で無限ループに入っていた
++1 calculateLineString __set "krry(1,2) \^ [3,4]"
++0 krryStt         __compare [[3,4],[6,8]]
+#+0 checkVal            __set "[[3,4],[6,8]]"
+
+# 08.01.27 ('ab)XY') の真ん中の ')' で括弧を閉じさせていた
++1 calculateLineString __set "str('ab)XY')"
++0 checkVal            __set "'ab)XY'"
+
+# 08.01.25 `εL <1,2,3> <4,5,6> == <  3, -6,  3 > で 積演算子:* の挿入をする
+#+1 calculateLineString __set "`εL [1,2,3] [4,5,6]"
+#+0 krryStt         __compare [  3, -6,  3 ]
+
+# 08.01.25 複素数での べき乗 ^-->** の確認
++1 calculateLineString __set "x=1+2j; x^2 + x + 1"
++0 scalarStt     __compare -1+6j
+
+# 08.01.25 べき乗 ^-->** の確認
++1 calculateLineString __set "x=1; x^2 + x + 1"
++0 inStt               __compare 3
+
+
+# 08.01.10  
++1 calculateLineString __set "global valStt; a = 2; valStt = 3 a"
++0 checkVal            __set "6"
+
++1 __end    # 09.04.08
+
+
+# 08.01.04  行頭のスペースがインデントになり、不正インデントえらーになった
++1 calculateLineString __set "mt=zeros(2,2); mt[0,:]=[1,2]; putSf(mt * (1,2))"
++0 checkResultArr      __set "[ [1,4], [0,0] ]"
+
++1 calculateLineString __set "putSf(`σx*3)"
++0 checkResultArr      __set "[ [0,3], [3,0] ]"
+
++1 calculateLineString __set "a=3.0; putSf(a+5.0)"
++0 checkResultVal      __set "8"              
+
++1 calculateLineString __set "σ=3; putSf(σ+4)"
++0 checkResultVal      __set "7"              
+
+## "08.01.04  3+4 の計算結果が 7 となる基本動作のチェック
++1 calculateLineString __set "putSf( 3+4)"    #
++0 checkResultVal      __set "7"              
+
++1 __end
+
+sfIni.py testPyClcLine.vrf
+

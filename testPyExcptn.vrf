@@ -1,0 +1,68 @@
+#english:
+#    PythonSf testExcptn.vrf
+#    https://github.com/lobosKobayashi
+#    http://lobosKobayashi.github.com/
+#    
+#    Copyright 2016, Kenji Kobayashi
+#    All test codes in this file was designed by kVerifierLab Kenji Kobayashi
+#
+#    I release souce codes in this file under the GPLv3
+#    with the exception of my commercial uses.
+#
+#    2016y 12m 28d Kenji Kokbayashi
+#
+#japanese:
+#    PythonSf testExcptn.vrf
+#    https://github.com/lobosKobayashi
+#    http://lobosKobayashi.github.com/
+#
+#    Copyright 2016, Kenji Kobayashi
+#    このファイルの全てのテスト・コードは kVerifierLab 小林憲次が作成しました。
+#    
+#    作成者の小林本人に限っては商用利用を許すとの例外条件を追加して、
+#    このファイルのソースを GPLv3 で公開します。
+#
+#    2016年 12月 28日 小林憲次
+
+#+1 calculateLineString __set "x=kvct(1,2,3,complex)"
++1 calculateLineString __set "ClFldTns([1,2,3],dtype=float)"
+# 2012.12.25 ワン・ライナーでもファイル実行に変更したことにともない、例外発生時の実行行を保持できなくなった
+#+0 strExceptionStt     __compare "__init__() got an unexpected keyword argument 'dtype' at excecuting:ClFldTns([1,2,3],dtype=float)"
++0 strExceptionStt     __compare "__init__() got an unexpected keyword argument 'dtype'"
+
+# 08.11.12 TypeError も、エラー文・式を出すようにした
+# 08.11.21 Bool Field についても整数値べき乗を許すように変更した。
+# <== Zp での整数べき乗が必要なため。
+#     Bool Field 要素の多項式も有り得るから
+#+1 calculateLineString __set "oc.BF(1)**3"
+#+0 strExceptionStt __compare "unsupported operand type(s) for ** or pow(): 'BF' and 'int' at excecuting:oc.BF(1)**3"
+
+# 08.103.28 kzrs(3,complex) でエラーになっていた
+# array cannot be safely cast to required type at excecuting:kzrs(10,complex)
+#+1 calculateLineString __set "x=kzrs(3,complex)"
++1 calculateLineString __set "kzrs(3,complex)"
++0 krryStt         __compare [0+0j,0+0j,0+0j]
+
+# 08.103.27
++1 calculateLineString __set "x={};for i in range(4):x[i]=i"
++0 strExceptionStt __compare "Don't use = in the last statement not having value like this:for i in range(4):x[i]=i"
+
+# 12.12.07 renderFaces(..) assert
++1 calculateLineString __set "dct={};dct[0,0]=(0,1,);dct[1,0]=(1,1,0);dct[1,1]=(1,1,1); renderFaces(dct)"
++0 strExceptionStt     __compare "dictionary mtrxAg index is not alined{(1, 0): (1, 1, 0), (0, 0): (0, 1), (1, 1): (1, 1, 1)}"
+
+# 13.01.17 visual が VMware Ubuntu で動かん
+# 10.04.26 vsGraph の関数を、とにかく通す
+# 16.12.01 vs.scene.visible=0 による visual の強制終了は linux では hung-up になってしまう
+#+1 calculateLineString __set "dct={};N=8;for idx, (x,y) in enmasq((-3,N,6/N), (1,N,-2/N)):dct[idx]=sin(x + `i y);renderMtCplxWithRGB(dct);vs.scene.visible=0;0==0"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "N,f,dct=16,λ x,y:(x^2+y),{};lst=klsp(0,1,N);for idx,(x,y) in enmitr(lst,lst):dct[idx]=f(x,y);renderMtrx(dct);vs.scene.visible=0;0==0"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "N,f,dct=16,λ x,y:(x^2+y),{};lst=klsp(0,1,N);for idx,(x,y) in enmitr(lst,lst):dct[idx]=f(x,y);plot3d(dct);vs.scene.visible=0;0==0"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "N,f,dct=16,λ x,y:(x^2+y),{};lst=klsp(0,1,N);for idx,(x,y) in enmitr(lst,lst):dct[idx]=f(x,y);plot3dRowCol(dct);vs.scene.visible=0;0==0"
+#+0 blStt               __compare True
+
+
++1 __end
+

@@ -1,0 +1,2991 @@
+#english:
+#    PythonSf pythonSfToDo.vrf
+#    https://github.com/lobosKobayashi
+#    http://lobosKobayashi.github.com/
+#    
+#    Copyright 2016, Kenji Kobayashi
+#    All test codes in this file was designed by kVerifierLab Kenji Kobayashi
+#
+#    I release souce codes in this file under the GPLv3
+#    with the exception of my commercial uses.
+#
+#    2016y 12m 28d Kenji Kokbayashi
+#
+#japanese:
+#    PythonSf pythonSfToDo.vrf
+#    https://github.com/lobosKobayashi
+#    http://lobosKobayashi.github.com/
+#
+#    Copyright 2016, Kenji Kobayashi
+#    このファイルの全てのテスト・コードは kVerifierLab 小林憲次が作成しました。
+#    
+#    作成者の小林本人に限っては商用利用を許すとの例外条件を追加して、
+#    このファイルのソースを GPLv3 で公開します。
+#
+#    2016年 12月 28日 小林憲次
+
+# 2017.01.01 SNb:-----: oc.RS(-1) == oc.RS(0xFF) になっていた
+# 2017.01.01 SNb:-----: coded as oc.RS(-1) == oc.RS(0xFF)
+# 2014.12.26 SNb:00074 : 0.97B?:narrowed Sb.__equ__ True objects
++1 calculateLineString __set "oc.RS(-1) == oc.RS(0xFF)"
++0 blStt               __compare False
++1 calculateLineString __set "oc.RS(-1) == oc.RS(1)"
++0 blStt               __compare True
+
+# 2015.04.19 SNb:00079: Python2.7.9 では shebang の位置が一行目に限定された
++1 calculateLineString __set "ustr=u'あ'; [hex(ord(ch)) for ch in ustr.encode('utf-8')]==['0xe3', '0x81', '0x82']"
++0 blStt               __compare True
+
+# 2014.12.26 SNb:00074 : 0.97B?:narrowed Sb.__equ__ True objects
++1 calculateLineString __set "Sb(0,1)==(0,1)"
++0 blStt               __compare False
++1 calculateLineString __set "Sb(1,0) == Sb(0,1)"
++0 blStt               __compare False
++1 calculateLineString __set "Sb(0,1)!=(0,1)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(0,1) == Sb(0,1)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(0,1) == Sb(0,1,2)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(1,0) == Sb(1,0,2)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(1,0,2) == Sb(1,0)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(1,0) == Sb(0,1,2)"
++0 blStt               __compare False
++1 calculateLineString __set "Sb(1,0,2) == Sb(0,1)"
++0 blStt               __compare False
+
+# 2014.12.24 SNf:00073 : 0.97B?:change name:group to extend and add a two term function to group parameters
+## extending action by default *
++1 calculateLineString __set "extend([Cy(0,1), Cy(0,1,2)])==kfs(Sb(0,1), Sb(1,0), Sb(0,2,1), Sb(1,2,0), Sb(2,0,1), Sb(2,1,0))"
++0 blStt               __compare True
++1 calculateLineString __set "ar=~[4,Z5]; extend(ar)==kfs(1, 4)"
++0 blStt               __compare True
++1 calculateLineString __set "extend([kfs(0,1),kfs(1,2),kfs(2,3)]) == kfs(kfs(), kfs(0, 1), kfs(1), kfs(1, 2), kfs(2), kfs(2, 3))"
++0 blStt               __compare True
+#
+## extending action by default +
++1 calculateLineString __set "ar=~[4,Z5]; extend(ar,λ x,y:x+y)==kfs(0, 1, 2, 3, 4)"
++0 blStt               __compare True
++1 calculateLineString __set "extend([kfs(0,1),kfs(1,2),kfs(2,3)],λ x,y:x+y) == kfs(kfs(0, 1), kfs(0, 1, 2), kfs(0, 1, 2, 3), kfs(1, 2), kfs(1, 2, 3), kfs(2, 3))"
++0 blStt               __compare True
++1 calculateLineString __set "extend(extend([kfs(0,1),kfs(1,2),kfs(2,3)]), λ x,y:x+y) == kfs(kfs(), kfs(0, 1), kfs(0, 1, 2), kfs(0, 1, 2, 3), kfs(1), kfs(1, 2), kfs(1, 2, 3), kfs(2), kfs(2, 3))"
++0 blStt               __compare True
+
+
+# 2014.12.24 SNf:00071 closed: 0.97B?: add some features to kfs:2014/11/21
+## kfs(1,2,3) の書き方も許すようにした。kfs([1,2,3]) だけでは冗長だから
++1 calculateLineString __set "kfs([1,2,3]).p == (1,2,3)"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(1,2,3).p == (1,2,3)"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(1).p == (1,)"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(x^2 for x in [1,2,3]).p == (1,4,9)"
++0 blStt               __compare True
++1 calculateLineString __set "str(kfs(1,2,3)) == 'kfs(1, 2, 3)'"
++0 blStt               __compare True
++1 calculateLineString __set "repr(kfs(1,2,3)) == 'kfs(1, 2, 3)'"
++0 blStt               __compare True
+
+## 集合の集合のとき、上手く sorting されていなかった
++1 calculateLineString __set "kfs(kfs(1,2), kfs(0,1)).p == (kfs(0, 1), kfs(1, 2))"
++0 blStt               __compare True
+
+## 集合の包含関係を <,<=,>,>= 演算子で判定可能にした
++1 calculateLineString __set "kf=kfs(range(5)) == kfs(0, 1, 2, 3, 4)"
++0 blStt               __compare True
++1 calculateLineString __set "kf=kfs(range(5)); kf.issubset(range(7))"
++0 blStt               __compare True
++1 calculateLineString __set "kf=kfs(range(5)); kf.issubset(range(5))"
++0 blStt               __compare True
++1 calculateLineString __set "kf=kfs(range(5)); not kf.issubset(range(1,5))"
++0 blStt               __compare True
++1 calculateLineString __set "kf=kfs(range(5)); kf!=(range(5))"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(1,2,3)==set([1,2,3])"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(1,2)<kfs(1,2,3)"
++0 blStt               __compare True
++1 calculateLineString __set "not (kfs(1,2)<kfs(1,2))"
++0 blStt               __compare True
++1 calculateLineString __set "not (kfs(1,2)<kfs(2,3))"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(1,2)<   (2,3)"
++0 strPythonAppErrorStt __compare "You set a non set parameter:(2, 3) in kfs.__lt__."
++1 calculateLineString __set "kfs(1,2)<=kfs(1,2,3)"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(1,2)<=kfs(1,2)"
++0 blStt               __compare True
++1 calculateLineString __set "not (kfs(1,2)<=kfs(2,3))"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(1,2)<=   (2,3)"
++0 strPythonAppErrorStt __compare "You set a non set parameter:(2, 3) in kfs.__le__."
++1 calculateLineString __set "not (kfs(1,2)>kfs(1,2,3))"
++0 blStt               __compare True
++1 calculateLineString __set "not (kfs(1,2)>kfs(1,2))"
++0 blStt               __compare True
++1 calculateLineString __set "not (kfs(1,2)>kfs(2,3))"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(1,2,3)>kfs(1,2)"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(1,2)>   (2,3)"
++0 strPythonAppErrorStt __compare "You set a non set parameter:(2, 3) in kfs.__gt__."
++1 calculateLineString __set "not (kfs(1,2)>=kfs(1,2,3))"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(1,2)>=kfs(1,2)"
++0 blStt               __compare True
++1 calculateLineString __set "not (kfs(1,2)>=kfs(2,3))"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(1,2,3)>=kfs(1,2)"
++0 blStt               __compare True
++1 calculateLineString __set "kfs(1,2)>=  (2,3)"
++0 strPythonAppErrorStt __compare "You set a non set parameter:(2, 3) in kfs.__ge__."
+
+    
+# 2014.11.13 SNb:00068 : 0.97B?: cmps in sfCrrntIni.py have a mulfunction for the None parameter
++1 calculateLineString __set "f=λ x,y:x y ; fn=f2CT(f); a,b,x=2,1,3; (fn.fst(a) ~% fn.fst(b))(x) == 6"
++0 blStt               __compare True
+
+# 2014.11.02 SNf:00033 SNf:00032: add randi(..) to symplify calling randint(..) date:2014/06/30 (月) time:08:41
++1 calculateLineString __set "seed(0); x=randi(10); x<10 and isinstance(x, int)"
++0 blStt               __compare True
++1 calculateLineString __set "seed(0); x=randi(5,10); 5<=x<10 and isinstance(x, int)"
++0 blStt               __compare True
++1 calculateLineString __set "seed(0); v=randi(10, [5]); all(v<10) and v.shape==(5,) and isinstance(v, ClTensor)"
++0 blStt               __compare True
++1 calculateLineString __set "seed(0); v=randi(5,10, [5]); all(5<=v) and all(v<10) and v.shape==(5,) and isinstance(v, ClTensor)"
++0 blStt               __compare True
++1 calculateLineString __set "seed(0); mt=randi(10, [3,5]); np.alltrue(mt<10) and mt.shape==(3,5) and isinstance(mt, ClTensor)"
++0 blStt               __compare True
++1 calculateLineString __set "seed(0); mt=randi(5,10, [3,5]); np.alltrue(5<=mt) and np.alltrue(mt<10) and mt.shape==(3,5)"
++0 blStt               __compare True
++1 calculateLineString __set "seed(0); mt=randi(5,10, size=[3,5]); np.alltrue(5<=mt) and np.alltrue(mt<10) and mt.shape==(3,5)"
++0 blStt               __compare True
+
+# 2014.11.02 SNf:00063 fix fftshift to return an ClTensor instance and add ifftshift date:2014/10/04
++1 calculateLineString __set "v=fftshift([1,2,3,4,5]); v == ~[4,5,1,2,3] and isinstance(v,ClTensor)"
++0 blStt               __compare True
+
++1 calculateLineString __set "v=ifftshift([1,2,3,4,5]); v == ~[3,4,5,1,2] and isinstance(v,ClTensor)"
++0 blStt               __compare True
+
+# 2014.09.30 SNf:00058 math.sin([1,2,3]) had returned math.sin
++1 calculateLineString __set "import math; ClAF(math.sin)(pi/2)  == 1"
++0 blStt               __compare True
+
+# 2014.09.24 SNf:00054 add plotDbl(..)
+#+1 calculateLineString __set "arF=fft(range(10)); plotDbl(arF.real, arF.imag);vs.scene.visible=0;0==0"
++1 calculateLineString __set "plotDbl; 0==0"
++0 blStt               __compare True
+
+# 2014.09.22 SN:00052 __str__ of poly1d instances, which generated from a ClTensor array,  return "cannot accumulate" errors
++1 calculateLineString __set "x=~[1,2]; poly1d(x).__str__()[2:]=='1 s + 2'"
++0 blStt               __compare True
+
+# 2014.08.23 SN:00045 ClRtnl.getDgRspns() calculated improperly
++1 calculateLineString __set "z=`s; F=1/(1-0.5z^-1); G=(F F); G.getDgRspns([1]+[0]*9) ~== G.getDgImpls()[:10]"
++0 blStt               __compare True
+
+# 2014.08.08 SN:00042 ClFldTns m_dtrm returns sign inverted value occasionally
++1 calculateLineString __set "~[[0,1],[1,0],Z3].m_dtrm == Z3(2)"
++0 blStt               __compare True
++1 calculateLineString __set "N=3; seed(0); det=λ v:v[0]v[4]v[8]+v[1]v[5]v[6]+v[2]v[3]v[7]-v[2]v[4]v[6]-v[1]v[3]v[8]-v[0]v[5]v[7]; all((Bf(mt=~[randint(N,size=[N,N]),Z3]), Bf.mt.m_dtrm == det(Bf.mt.r))[-1] for _ in range(10))"
++0 blStt               __compare True
+
+# 2014.08.07 SN:00041 reverse the substitution by Sb.__call__
++1 calculateLineString __set "Sb(3,0,1,4,5,2)('abcdef') == 'bcfade'"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(3,0,1,4,5,2)('abcdefXYZ') == 'bcfadeXYZ'"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(3,0,1,4,5,2)((1,2,3,4,5,6))==(2,3,6,1,4,5)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(3,0,1,4,5,2)((1,2,3,4,5,6,7))==(2,3,6,1,4,5,7)"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(3,0,1,4,5,2)(range(6))==[1,2,5,0,3,4]"
++0 blStt               __compare True
++1 calculateLineString __set "Sb(3,0,1,4,5,2)(range(8))==[1,2,5,0,3,4,6,7]"
++0 blStt               __compare True
+
+# 2014.08.07 SN:00040 can't read integer type ClTensor file variables
++1 calculateLineString __set "tmp:=~[1,2,int]; =:tmp; tmp==~[1,2]"
++0 blStt               __compare True
+
+# 2014.07.27 SN:00039 add alias label _.f _.l for _.fst _.lst at CT class
++1 calculateLineString __set "f=f2CT(λ x,y:x+y, Z5); g=λ x:(f.f(x)~%f.f(Z5(2)))(Z5(0)); all([f.l(Z5(2))(x)==g(x) for x in ~[range(5),Z5]])"
++0 blStt               __compare True
+
+# 2014.07.07 SN:00036 add copy() method to ClFldTns
++1 calculateLineString __set "mt=~[[0,1],[0,0],Z3]; ls=[mt]; mtX=mt.copy(); mtX[0,0]=Z3(2); ls.append(mtX); ls[0][0,0]==0"
++0 blStt               __compare True
+
+# 2014.06.29 SN:00027 append __lt__ to RS class
++1 calculateLineString __set "RS=oc.RS; kfs([RS(0x3e), RS(4), RS(0x1c), RS(7)]).sl[0]==RS(4)"
++0 blStt               __compare True
+
+# 2014.06.29 SN:00022 O3 scalar と O3 vector の掛け算でエラーになっていた 
++1 calculateLineString __set "a,b=O3(0, 1, 0, 1),~[O3(0, 0, 0, 2), O3(1, 2, 2, 0)]; a b==~[O3(1,0,1,0),O3(1,2,2,0)]"
++0 blStt               __compare True
++1 calculateLineString __set "x,y=Ob(1,2,3,4),~[[1,2,3],[4,5,6],Z127]; y.shape==(2,3)"
++0 blStt               __compare True
++1 calculateLineString __set "x,y=Ob(1,2,3,4),~[1,2,3,Z127]; x y == Ob(115, 119,  14,   4)"
++0 blStt               __compare True
++1 calculateLineString __set "x,y=O3(1,2,3,4),~[[1,2,3],[4,5,6],Z3]; (x y)[1,1]==O3(2,1,0,2)"
++0 blStt               __compare True
+
+# 2014.06.29 SN:00025 O3 scalar と O3 vector の掛け算で Oc(Oc(...), ..) を返すエラーになっていた
++1 calculateLineString __set "a,b=Oc(1,2), ~[Oc(3,4),Oc(5,6)]; a b == ~[Oc(-5,10), Oc(-7,16)]"
++0 blStt               __compare True
+
+# 2014.06.29 SN:00026 ClFldTns of (oc.Pl of oc.RS) と ClFldTns of ocRS の内積で例外が発生していた
++1 calculateLineString __set "RS=oc.RS; x=oc.Pl(1,0,RS); y,z=~[x,RS(1)],~[1,2,RS]; y z == x + RS(2)"
++0 blStt               __compare True
++1 calculateLineString __set "RS=oc.RS; x=oc.Pl(1,0,RS); y,z=~[x,RS(1)],~[1,2,RS]; y z == x +   (2)"
++0 blStt               __compare True
+
+# 2014.06.27 SN:00028 append  ClFldTns parameter actions to Sb.__call__
++1 calculateLineString __set "RS=oc.RS; vc=~[0xb,0x45,0x93,0xdc,RS]; type(Sb(1,3,2,0)(vc)) == ClFldTns"
++0 blStt               __compare True
++1 calculateLineString __set "RS=oc.RS; vc=~[0xb,0x45,0x93,0xdc,RS]; Sb(1,3,2,0)(vc)==~[0xdc,0x0b,0x93,0x45,RS]"
++0 blStt               __compare True
+
+# 2014.06.27 SN:00029 append Z127_octonion Ob to sfCrrntIni
++1 calculateLineString __set "Ob(10,20,30) 2 == Ob(20,40,60)"
++0 blStt               __compare True
++1 calculateLineString __set "Ob(1,2) Ob(3,4) == Ob(122, 10)"
++0 blStt               __compare True
++1 calculateLineString __set "Ob(1,2,3,0, 4,5,6,0) Ob(3,2,3,0, 8,5,7,0) == Ob( 18, 115, 119, 122,  17,  28,  37, 125)"
++0 blStt               __compare True
+
+# 2014.06.05 SN:00023 bug fix: ClFldTns.__repr__(..) が assert error だった
++1 calculateLineString __set "U=kzrs(2,2,Oc); U[0,1]=Oc(1, 2, 0, 2)^-1; strAt=U.__repr__(); strAt[37:59]"
++0 strStt              __compare "Oc(0.1111111111111111,"
+
+# 2014.05.22 SN:00021 bug fix: itr=mitr(3); [(v0,v1) for v0,v1 in mitr(itr,itr)] が [] だった
++1 calculateLineString __set "itr=mitr(3); [(v0,v1) for v0,v1 in mitr(itr,itr)][8]==(2,2)"
++0 blStt               __compare True
++1 calculateLineString __set "X,Y=xrange(4,6),xrange(6,8); list(mitr(mitr(X,X), mitr(Y,Y)))[15]==((5, 5), (7, 7))"
++0 blStt               __compare True
++1 calculateLineString __set "X,Y=xrange(4,6),xrange(6,8); list(enmitr(mitr(X,X), mitr(Y,Y)))[15]==((3, 3), ((5, 5), (7, 7)))"
++0 blStt               __compare True
++1 calculateLineString __set "X,Y={4,5},{6,7,8}; len([(f,g) for f,g in mitr(mitr(X,X,X),mitr(Y,Y,Y))]) == 216"
++0 blStt               __compare True
+## ついでに prdct = itertools.product を追加する
++1 calculateLineString __set "X,Y=xrange(4,6),xrange(6,8); list(prdct(prdct(X,X), prdct(Y,Y)))[15]== ((5, 5), (7, 7))"
++0 blStt               __compare True
+
+# 2013.05.19 bug fix: absF(`X)(1,2) resulted "TypeError: <lambda>() takes exactly 1 argument (2 given)"
++1 calculateLineString __set "absF(`X)(2,3) == 2"
++0 blStt               __compare True
++1 calculateLineString __set "absF(`Y)(2,3) == 3"
++0 blStt               __compare True
+#
+# 2012.12  from math import fabs だけのランライナーで、文を式としていた
++1 calculateLineString __set "from math import fabs"
++1 __chkFlLn _tmC.py[7] r"from math import fabs"
+
+# 2013.01.17 ClTensor, ClFldTensor に __ne__ を追加した。
++1 calculateLineString __set "~[1,2,3]==[1,2,3]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,3]!=[1,2,3]"
++0 blStt               __compare True
++1 calculateLineString __set "~[1,2,3]==[4,5,6]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,3]!=[4,5,6]"
++0 blStt               __compare True
+
++1 calculateLineString __set "~[1,2,3,Z3]==[1,2,3]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,3,Z3]==~[1,2,3,Z3]"
++0 blStt               __compare True
++1 calculateLineString __set "~[1,2,3,Z3]!=[1,2,3]"
++0 blStt               __compare True
++1 calculateLineString __set "~[1,2,3,Z3]!=~[1,2,3,Z3]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,3,Z3]==[4,5,6]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,3,Z3]==~[4,5,6,Z3]"
++0 blStt               __compare True
++1 calculateLineString __set "~[1,2,3,Z3]!=[4,5,6]"
++0 blStt               __compare True
++1 calculateLineString __set "~[1,2,3,Z3]!=~[4,5,6,Z3]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,3,Z3]==[1,2,2]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,3,Z3]==~[1,2,2,Z3]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,3,Z3]!=[1,2,2]"
++0 blStt               __compare True
++1 calculateLineString __set "~[1,2,3,Z3]!=~[1,2,2,Z3]"
++0 blStt               __compare True
+
+# 2013.01.01 ClTensor, ClFldTensor に __contains__ を追加した。np.ndarray とは異なる動作にした。
+# ndarray の in 動作はおかしい
++1 calculateLineString __set "~[1,2,3] in ~[[1,2,3],[4,5,6]]"
++0 blStt               __compare True
++1 calculateLineString __set "3 in ~[[1,2,3],[4,5,6]]"
++0 blStt               __compare False
++1 calculateLineString __set "3.0 in ~[[1,2,3],[4,5,6]]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,3] in ~[[1,2,3],[4,5,6]]"
++0 blStt               __compare True
++1 calculateLineString __set "~[1,2,4] in ~[[1,2,3],[4,5,6]]"
++0 blStt               __compare False
+
++1 calculateLineString __set "[1,2,0] in ~[[1,2,3],[4,5,6]]"
++0 blStt               __compare False
++1 calculateLineString __set "0 in ~[[1,2,3],[4,5,6]]"
++0 blStt               __compare False
++1 calculateLineString __set "0.0 in ~[[1,2,3],[4,5,6]]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,0] in ~[[1,2,3],[4,5,6]]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,4,5] in ~[[1,2,3],[4,5,6]]"
++0 blStt               __compare False
+
++1 calculateLineString __set "[1,2,3   ] in ~[[1,2,3],[4,5,6],Z7]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,3,Z7] in ~[[1,2,3],[4,5,6],Z7]"
++0 blStt               __compare True
++1 calculateLineString __set "3 in ~[[1,2,3],[4,5,6],Z7]"
++0 blStt               __compare False
++1 calculateLineString __set "Z7(3) in ~[[1,2,3],[4,5,6],Z7]"
++0 blStt               __compare False
++1 calculateLineString __set "[1,2,4   ] in ~[[1,2,3],[4,5,6],Z7]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,4,Z7] in ~[[1,2,3],[4,5,6],Z7]"
++0 blStt               __compare False
++1 calculateLineString __set "8 in ~[[1,2,3],[4,5,6],Z7]"
++0 blStt               __compare False
+
++1 calculateLineString __set "7 in ~[[1,2,3],[4,5,6],Z7]"
++0 blStt               __compare False
++1 calculateLineString __set "Z7(0) in ~[[1,2,3],[4,5,6],Z7]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,0,Z7] in ~[[1,2,3],[4,5,6],Z7]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,0   ] in ~[[1,2,3],[4,5,6],Z7]"
++0 blStt               __compare False
+
+# 11.11.06 
+# pyGrp.ClZp 要素の Octonion を扱えるようにしたとき、割り算にも対策が必要だった
++1 calculateLineString __set "TyZp.N=3; class Z3(ClZp):pass; lst=[0,1,2]; f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); f(0,1,2,3)/Z3(2) == oc.Oc(0,2,1,0)"
++0 blStt               __compare True
++1 calculateLineString __set "TyZp.N=3; class Z3(ClZp):pass; lst=[0,1,2]; f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); Z3(2)/f(1,0,2,3) == oc.Oc(1,0,1,0)"
++0 blStt               __compare True
++1 calculateLineString __set "TyZp.N=3; class Z3(ClZp):pass; lst=[0,1,2]; f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); f(1,0,2,3)^2 f(1,0,2,3)^-2 == 1"
++0 blStt               __compare True
++1 calculateLineString __set "TyZp.N=3; class Z3(ClZp):pass; lst=[0,1,2]; f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); f(1,0,2,3)^-2 == oc.Oc(0,0,2,0)"
++0 blStt               __compare True
++1 calculateLineString __set "TyZp.N=3; class Z3(ClZp):pass; lst=[0,1,2]; f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); 1/f(1,1,2,3)"
++0 strExceptionStt     __compare "Square value is 0 at ClOctonion:inv()."
+
+# 11.11.06 
+# Zp(N) 要素の Octonion を扱えるようにしたとき、Z3(2) - Octonion でエラーになっていた
++1 calculateLineString __set "TyZp.N=3; class Z3(ClZp):pass; lst=[0,1,2]; f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); Z3(2)-f(1,1,2,3) == oc.Oc(1, 2, 1, 0)"
++0 blStt               __compare True
++1 calculateLineString __set "TyZp.N=3; class Z3(ClZp):pass; lst=[0,1,2]; f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); f(0,1,2,3)-Z3(2) == oc.Oc(1, 1, 2, 0)"
++0 blStt               __compare True
+
+# 11.11.06 
+# Zp(N) 要素の Octonion を扱えるようにしたとき、Z3(2) + Octonion でエラーになっていた
++1 calculateLineString __set "TyZp.N=3; class Z3(ClZp):pass; lst=[0,1,2]; f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); Z3(2)+f(0,1,2,3) == oc.Oc(2, 1, 2, 0)"
++0 blStt               __compare True
++1 calculateLineString __set "TyZp.N=3; class Z3(ClZp):pass; lst=[0,1,2]; f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); f(0,1,2,3)+Z3(2) == oc.Oc(2, 1, 2, 0)"
++0 blStt               __compare True
+
+# 11.11.05 
+# Zp(N) 要素の Octonion を扱えるようにしたとき、Z3(2) * Octonion でエラーになっていた
++1 calculateLineString __set "TyZp.N=3; class Z3(ClZp):pass; lst=[0,1,2]; f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); Z3(2) f(0,1,2,3) == oc.Oc(0, 2, 1, 0)"
++0 blStt               __compare True
++1 calculateLineString __set "TyZp.N=3; class Z3(ClZp):pass; lst=[0,1,2]; f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); f(0,1,2,3) Z3(2) == oc.Oc(0, 2, 1, 0)"
++0 blStt               __compare True
+#
+
+# 11.11.06 octonion のマイナスべき乗計算が誤っていた
++1 calculateLineString __set "at=oc.Oc(1,0,2,3); (at^2 at^-2) ~== 1"
++0 blStt               __compare True
+
+# 11.11.06 
+# Zp(N) 要素の Octonion を扱えるようにしたとき、割り算にも対策が必要だった
++1 calculateLineString __set "lst,Z3=[0,1,2],oc.Zp(3); f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); f(0,1,2,3)/Z3(2) == oc.Oc(0,2,1,0)"
++0 blStt               __compare True
++1 calculateLineString __set "lst,Z3=[0,1,2],oc.Zp(3); f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); Z3(2)/f(1,0,2,3) == oc.Oc(1,0,1,0)"
++0 blStt               __compare True
++1 calculateLineString __set "lst,Z3=[0,1,2],oc.Zp(3); f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); f(1,0,2,3)^2 f(1,0,2,3)^-2 == 1"
++0 blStt               __compare True
++1 calculateLineString __set "lst,Z3=[0,1,2],oc.Zp(3); f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); f(1,0,2,3)^-2 == oc.Oc(0,0,2,0)"
++0 blStt               __compare True
++1 calculateLineString __set "lst,Z3=[0,1,2],oc.Zp(3); f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); 1/f(1,1,2,3)"
++0 strExceptionStt     __compare "Square value is 0 at ClOctonion:inv()."
+
+# 11.11.06 
+# Zp(N) 要素の Octonion を扱えるようにしたとき、Z3(2) - Octonion でエラーになっていた
++1 calculateLineString __set "lst,Z3=[0,1,2],oc.Zp(3); f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); Z3(2)-f(1,1,2,3) == oc.Oc(1, 2, 1, 0)"
++0 blStt               __compare True
++1 calculateLineString __set "lst,Z3=[0,1,2],oc.Zp(3); f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); f(0,1,2,3)-Z3(2) == oc.Oc(1, 1, 2, 0)"
++0 blStt               __compare True
+
+# 11.11.05 
+# Zp(N) 要素の Octonion を扱えるようにしたとき、Z3(2) + Octonion でエラーになっていた
++1 calculateLineString __set "lst,Z3=[0,1,2],oc.Zp(3); f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); Z3(2)+f(0,1,2,3) == oc.Oc(2, 1, 2, 0)"
++0 blStt               __compare True
++1 calculateLineString __set "lst,Z3=[0,1,2],oc.Zp(3); f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); f(0,1,2,3)+Z3(2) == oc.Oc(2, 1, 2, 0)"
++0 blStt               __compare True
+
+# 11.11.05 
+# Zp(N) 要素の Octonion を扱えるようにしたとき、Z3(2) * Octonion でエラーになっていた
++1 calculateLineString __set "lst,Z3=[0,1,2],oc.Zp(3); f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); Z3(2) f(0,1,2,3) == oc.Oc(0, 2, 1, 0)"
++0 blStt               __compare True
++1 calculateLineString __set "lst,Z3=[0,1,2],oc.Zp(3); f=λ j,k,l,m:oc.Oc(~[j,k,l,m, Z3]); f(0,1,2,3) Z3(2) == oc.Oc(0, 2, 1, 0)"
++0 blStt               __compare True
+#
+# 11.11.05 
+# oc.Oc(~[1,0,0,0, oc.BF]) == `1で下のエラーになっていた
+# object of type 'BF' has no len() at excecuting:oc.Oc(krry__(*[1,0,0,0, oc.BF])) == k__bq_1___
++1 calculateLineString __set "oc.Oc(~[1,0,0,0, oc.BF]) == `0"
++0 blStt               __compare False
++1 calculateLineString __set "oc.Oc(~[1,0,0,0, oc.BF]) ==  0"
++0 blStt               __compare False
++1 calculateLineString __set "oc.Oc(~[1,0,0,0, oc.BF]) == `1"
++0 blStt               __compare True
++1 calculateLineString __set "oc.Oc(~[1,0,0,0, oc.BF]) ==  1"
++0 blStt               __compare True
+
++1 calculateLineString __set "oc.Oc(~[0,0,0,0, oc.BF]) == `0"
++0 blStt               __compare True
++1 calculateLineString __set "oc.Oc(~[0,0,0,0, oc.BF]) ==  0"
++0 blStt               __compare True
++1 calculateLineString __set "oc.Oc(~[0,0,0,0, oc.BF]) == `1"
++0 blStt               __compare False
++1 calculateLineString __set "oc.Oc(~[0,0,0,0, oc.BF]) ==  1"
++0 blStt               __compare False
+
+# 2011.08.19 invert discrete cos transform:idct2(..) を追加した
++1 calculateLineString __set "idct2( dct2(~[1,2,3,4]) ) ~== [1,2,3,4]"
++0 blStt               __compare True
+
+#2011.07.21 sqrt(np.array([ 1,-1 ])) を計算できなかった
+# numpy.sqrt([1,-1]) == [1 NaN] になるためだ
++1 calculateLineString __set "sqrt(np.array([ 1,-1 ])) ~== [1,`i]"
++0 blStt               __compare True
+
+# 11.07.19
+# [a for (a,b) in mrng(3,3)] で sfPPrcssr.py が assert エラーを出していた
+# 現在では不必要な inhibitToReadFromHDD(..) の中で for ... in の間の変数を
+# 検出する箇所でのエラーだった。
++1 calculateLineString __set "[a for (a,b) in mrng(3,3)]~== [0, 0, 0, 1, 1, 1, 2, 2, 2]"
++0 blStt               __compare True
+
+# 11y06m22d append sqrtm(..)
++1 calculateLineString __set "mt=sqrtm(`σx); (mt^2) ~== `σx"
++0 blStt               __compare True
+
+#11y06m14d cplx2RGB(..) 関数を追加した
++1 calculateLineString __set "cplx2RGB(1) == (0.99607843137254903, 0.0, 0.0)"
++0 blStt               __compare True
+
+#11y06m13d shftSq(..) を二つ以上 3x3 以上の ClFldTns, ClTensor で行わせたときに shape mismatch になっていた
+#12.12.13 ClTensor.__equ__ 追加のため、下を修正、コメント・アウトする
++1 calculateLineString __set "mt=~[[1,0,0],[0,1,0],[0,0,1]]; shftSq(mt)== ~[[0,0,0],[1,0,0],[0,1,0]]"
++0 blStt               __compare True
++1 calculateLineString __set "mt=~[[1,0,0],[0,1,0],[0,0,1]]; shftSq(mt,2)== ~[[0,0,0],[0,0,0],[1,0,0]]"
++0 blStt               __compare True
+
++1 calculateLineString __set "mt=~[[[1,0,1],[0,1,1]],[[0,0,1],[1,0,1]],[[1,1,1],[1,1,1]]]; shftSq(mt)== ~[[[0,0,0],[0,0,0]],[[1,0,1],[0,1,1]],[[0,0,1],[1,0,1]]]"
++0 blStt               __compare True
++1 calculateLineString __set "mt=~[[[1,0,1],[0,1,1]],[[0,0,1],[1,0,1]],[[1,1,1],[1,1,1]]]; shftSq(mt,2)== ~[[[0,0,0],[0,0,0]],[[0,0,0],[0,0,0]],[[1,0,1],[0,1,1]]]"
++0 blStt               __compare True
+
++1 calculateLineString __set "mt=~[[1,0,0],[0,1,0],[0,0,1],oc.BF]; shftSq(mt)== ~[[0,0,0],[1,0,0],[0,1,0],oc.BF]"
++0 blStt               __compare True
++1 calculateLineString __set "mt=~[[1,0,0],[0,1,0],[0,0,1],oc.BF]; shftSq(mt,2)== ~[[0,0,0],[0,0,0],[1,0,0],oc.BF]"
++0 blStt               __compare True
+
++1 calculateLineString __set "mt=~[[[1,0,1],[0,1,1]],[[0,0,1],[1,0,1]],[[1,1,1],[1,1,1]],oc.BF]; shftSq(mt)== ~[[[0,0,0],[0,0,0]],[[1,0,1],[0,1,1]],[[0,0,1],[1,0,1]], oc.BF]"
++0 blStt               __compare True
++1 calculateLineString __set "mt=~[[[1,0,1],[0,1,1]],[[0,0,1],[1,0,1]],[[1,1,1],[1,1,1]],oc.BF]; shftSq(mt,2)== ~[[[0,0,0],[0,0,0]],[[0,0,0],[0,0,0]],[[1,0,1],[0,1,1]], oc.BF]"
++0 blStt               __compare True
+#
+#+1 calculateLineString __set "mt=~[[1,0,0],[0,1,0],[0,0,1]]; ( shftSq(mt)== [[0,0,0],[1,0,0],[0,1,0]] ).all()"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "mt=~[[1,0,0],[0,1,0],[0,0,1]]; ( shftSq(mt,2)== [[0,0,0],[0,0,0],[1,0,0]] ).all()"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "mt=~[[[1,0,1],[0,1,1]],[[0,0,1],[1,0,1]],[[1,1,1],[1,1,1]]]; ( shftSq(mt)== [[[0,0,0],[0,0,0]],[[1,0,1],[0,1,1]],[[0,0,1],[1,0,1]]] ).all()"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "mt=~[[[1,0,1],[0,1,1]],[[0,0,1],[1,0,1]],[[1,1,1],[1,1,1]]]; ( shftSq(mt,2)== [[[0,0,0],[0,0,0]],[[0,0,0],[0,0,0]],[[1,0,1],[0,1,1]]] ).all()"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "mt=~[[1,0,0],[0,1,0],[0,0,1],oc.BF]; ( shftSq(mt)== [[0,0,0],[1,0,0],[0,1,0]] ).all()"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "mt=~[[1,0,0],[0,1,0],[0,0,1],oc.BF]; ( shftSq(mt,2)== [[0,0,0],[0,0,0],[1,0,0]] ).all()"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "mt=~[[[1,0,1],[0,1,1]],[[0,0,1],[1,0,1]],[[1,1,1],[1,1,1]],oc.BF]; ( shftSq(mt)== [[[0,0,0],[0,0,0]],[[1,0,1],[0,1,1]],[[0,0,1],[1,0,1]]] ).all()"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "mt=~[[[1,0,1],[0,1,1]],[[0,0,1],[1,0,1]],[[1,1,1],[1,1,1]],oc.BF]; ( shftSq(mt,2)== [[[0,0,0],[0,0,0]],[[0,0,0],[0,0,0]],[[1,0,1],[0,1,1]]] ).all()"
+#+0 blStt               __compare True
+
+
+
+#11y06m02d ( `X+`X^0 )(`σy) == `σy + `σy^0 にする。( `X+`X^0 )(`σy) == `σy + 1 になっていた。
+#上の動作でよい。
+# (`X^0)([0,1,2])== [1,1,1] だ。だから (`X^0)(`σx) == [[1,1],[1,1]] とする。
+
+# 11y05m16d krry(..) default float 動作仕様を誤らないようにテストにも書いておく
+# 11y05m16d Python sf では明示的にタイプを指定しないと、浮動小数点のベクトルや行列を生成します。int タイプの ClTensor ベクトルや行列を引数に与えたとしても浮動小数点タイプの行列やベクトルにします。
++1 calculateLineString __set "~[1,2,3].dtype== np.float64"
++0 blStt               __compare True
++1 calculateLineString __set "krry([1,2,3]).dtype==np.float64"
++0 blStt               __compare True
++1 calculateLineString __set "krry(~[1,2,3, int]).dtype == np.float64"
++0 blStt               __compare True
+# 微分方程式などの数値計算処理では浮動小数点の行列やベクトルを扱うことが大部分だからです。これらの計算に int タイプの行列やベクトルを混在させると無用なトラブルの元になるからです。int タイプの行列･ベクトル要素に小数点以下を取り除いた整数が代入されるからです。小数点以下が取り除かれてしまっても、数値計算結果は、一応はもっともらしい結果になることが多いからです。この問題に嵌ると、その原因を掴むのに多くの時間を盗られるからです。
+
+#int タイプの行列やベクトルにするには、明示的にタイプを指定する必要があります
++1 calculateLineString __set "~[1,2,3, int].dtype == np.int64"
++0 blStt               __compare True
++1 calculateLineString __set "krry(~[1,2,3, int], int).dtype==np.int64"
++0 blStt               __compare True
++1 calculateLineString __set "krry(~[1,2,3, int], dtype=int).dtype == np.int64"
++0 blStt               __compare True
+
+## 11y05m16d ClTensor, ClFldTnsr に .b 属性を追加しました。numpy.ndarray タイプのベクトルや行列インスタンスを返します。ClTensor instance.base, ClFldTnsor instance.m_tnsr.base も numpy タイプの参照行列ベクトルを返すのですが、この場合は変更ができません
++1 calculateLineString __set "type(~[1,2,3].b) == np.ndarray"
++0 blStt               __compare True
++1 calculateLineString __set "all( ~[1,2,3].b ~[4,5,6].b == [4,10,18] )"
++0 blStt               __compare True
++1 calculateLineString __set "type( ~[`1,`0,`1].b ) == np.ndarray"
++0 blStt               __compare True
++1 calculateLineString __set "( ~[`1,`0,`1].b ).dtype == object"
++0 blStt               __compare True
++1 calculateLineString __set "ar= ~[`1,`0,`1].b; ar[1]=`1; all(ar==[`1,`1,`1])"
++0 blStt               __compare True
+
+# 11y05m11d modify ClRtnl.getDgRspns to speed up
+# 12.12.13 ClTensor.__equ__ 追加のため、下を修正、コメント・アウトする
++1 calculateLineString __set "ClRtnl(1,[1,2]).getDgRspns([1,0,0,0])== ClRtnl(1,[1,2]).getDgImpls(4) "
++0 blStt               __compare True
++1 calculateLineString __set "ClRtnl(1,[1,2]).getDgRspns([1,1,1,1])==~[0,1,-1,3] "
++0 blStt               __compare True
++1 calculateLineString __set "zm=1/`s;G=(1+zm+zm^2);G.getDgRspns([1,0,0,0])==G.getDgImpls(4)"
++0 blStt               __compare True
++1 calculateLineString __set "zm=1/`s;(1+zm+zm^2).getDgRspns([1,1,1,1])==~[1,2,3,3]"
++0 blStt               __compare True
+#+1 calculateLineString __set "all( ClRtnl(1,[1,2]).getDgRspns([1,0,0,0])== ClRtnl(1,[1,2]).getDgImpls(4) )"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "all( ClRtnl(1,[1,2]).getDgRspns([1,1,1,1])==[0,1,-1,3] )"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "zm=1/`s;G=(1+zm+zm^2);all(G.getDgRspns([1,0,0,0])==G.getDgImpls(4))"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "zm=1/`s;all( (1+zm+zm^2).getDgRspns([1,1,1,1])==[1,2,3,3])"
+#+0 blStt               __compare True
+
+# 11y05m11d test of  python sf iterator tools
+# count(3): [3,4,5,6,7, ....]: ascending integer seriese
++1 calculateLineString __set "tn.count(3)[1:5]==[4,5,6,7]"
++0 blStt               __compare True
+# cycle([1,2,3]): [1,2,3, 1,2,3, 1,...]: seriese repeating a iterable argment
++1 calculateLineString __set "tn.cycle([1,2,3])[1:5]==[2,3,1,2]"
++0 blStt               __compare True
+# repeat([1,2]):[1,2,1,2,...]: repeat an object
++1 calculateLineString __set "tn.repeat([1,2])[1:4]==[[1,2],[1,2],[1,2]]"
++0 blStt               __compare True
++1 calculateLineString __set "list(tn.repeat(2,4))==[2,2,2,2]"
++0 blStt               __compare True
+# izip(sa,sb):[(sa[0],sb[0]), (sa[1],sb[1), ...)
++1 calculateLineString __set "tn.izip(tn.count(), tn.count(3))[1:4]==[(1,4),(2,5),(3,6)]"
++0 blStt               __compare True
+# ifilter(f,sq):[x for x in tn.count() if f(x)]
++1 calculateLineString __set "tn.ifilter(λ x:x%2==0, tn.count(1))[1:5] == [4,6,8,10]"
++0 blStt               __compare True
++1 calculateLineString __set "tn.ifilterfalse(λ x:x%2==0, tn.count(1))[1:5] == [3,5,7,9]"
++0 blStt               __compare True
+# chain: conect 2 iterator
++1 calculateLineString __set "tn.chain([8,9],tn.count())[1:5]==[9,0,1,2]"
++0 blStt               __compare True
+
+#I can't unerstand advantates of takewhile, dropwhile and groupby. 
+#Alternatively I will use ifilter, ifilterfalse
+#takewhile(conditionFnction, iterator): pick up by continuing condition from first
++1 calculateLineString __set "tn.takewhile(λ n:n%10==3, tn.count())[:5]==[]"
++0 blStt               __compare True
++1 calculateLineString __set "tn.takewhile(λ n:n<4    , tn.count())[:5]==[0,1,2,3]"
++0 blStt               __compare True
+#tpl=tn.groupby(tn.count(), λ n:(n//5)%3); `print( tpl[:5] ) 
+#[(0, <itertools._grouper object at 0x02134C50>),
+# (1, <itertools._grouper object at 0x02134F10>),
+# (2, <itertools._grouper object at 0x0213D930>),
+# (0, <itertools._grouper object at 0x0213D970>),
+# (1, <itertools._grouper object at 0x0213D3B0>)]
+#===============================
+#None
+#range(25)
+#===============================
+#[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,...]
+#group --------  -------------  ------------------  ------------------  ------------------
+#key          0              1                   2                   0                   1
+#
+#tpl=tn.groupby(tn.count(), λ n:(n//5)%3);       tpl[4][0]   # a key
+#===============================
+#1
+#tpl=tn.groupby(tn.count(), λ n:(n//5)%3); list( tpl[4][1] ) # a group
+#===============================
+#[20, 21, 22, 23, 24]
++1 calculateLineString __set "tpl=tn.groupby(tn.count(), λ n:(n//5)%3);       tpl[3][0]   == 0"
++0 blStt               __compare True
++1 calculateLineString __set "tpl=tn.groupby(tn.count(), λ n:(n//5)%3); list( tpl[3][1] ) == [15,16,17,18,19]"
++0 blStt               __compare True
+
+
+# 11,05,13 `X(int) が float 値を返していた
++1 calculateLineString __set "`X(3)"
++0 inStt               __compare 3
++1 calculateLineString __set "type((`X+2)(`1f)) == Fraction"
++0 blStt               __compare True
+
+# 11,02,05 oc.BF __truediv__ を追加した
++1 calculateLineString __set "1/`1 == `1"
++0 blStt               __compare True
+
+# 11.02.19 ~[1,`X`+`Y](3,4) のように、定数要素も含む ClAF type ClFldTns インスタ
+# ンスで、ニ変数のものをを呼び出すとエラーになっていた。一変数ならば OK だった
+#12.12.13 ClTensor.__equ__ 追加のため、下を修正、コメント・アウトする
++1 calculateLineString __set "~[1,`X+`Y](3,4)==~[1,7]"
++0 blStt               __compare True
+#+1 calculateLineString __set "all(~[1,`X+`Y](3,4)==[1,7])"
+#+0 blStt               __compare True
+
+# 10.11.02 odeint のテストを追加する。ode(..) が飛んでいた。
+# 10.12.12 pyxy package では dopri5 が使えない。計算結果も 224.101576488 になる
+#+1 calculateLineString __set "odeint(λ x,y:[y, 2y-26x],[0.01,0])(10, 256)[-1,0] ~== 224.106282647"
++1 calculateLineString __set "int(100*odeint(λ x,y:[y, 2y-26x],[0.01,0])(10, 256)[-1,0]) == 22410"
++0 blStt               __compare True
+
+# 10.10.18 expression UserOperator (expresssion).member で 
+# k__tilda__UsOp_xx____(xx, yy).member になっていた
+#   e.g ~[1,2].r ~^(~[1,2]).r
+#   k__tilda__UsOp_xor____(~[1,2], (~[1,2])).member になっていた。飛んでいた。
+# right term が括弧で囲われて .member が追加されたとき、その手前で括られていた
++1 calculateLineString __set "~[1,2].r ~^(~[1,2]).r"
++0 scalarStt           __compare 0
++1 calculateLineString __set "~[1,2].r ~^ (~[1,2]).r"
++0 scalarStt           __compare 0
+
+# 10.10.12 user operator に ~[..].method() を計算させると .method を前で切り
+# 出して user operator を働かせていた
+# e.g.  ~* = λ x,y:x y; ~[1,2].conj() ~* [3,4]
+#invalid syntax (<string>, line 1) at excecuting:krry__(*[1,2])* k__tilda__UsOp_mul____(.conj() , [3,4])
++1 calculateLineString __set "~* = λ x,y:x y; ~[1,2].conj() ~* [3,4] == 11"
++0 blStt               __compare True
++1 calculateLineString __set "~* = λ x,y:x y; ~[1,1+2j] ~* ~[1,1+2j].conj() == 6"
++0 blStt               __compare True
+
+# 10.10.12 user operator に Class(ag).method() を計算させると .method を前で切り
+# 出して user operator を働かせていた
+# e.g.  mt.conj() ~* mt.conj() は mt.k__tilda__UsOp_mul____(conj(), mt).conj() 
+#       になっていた
++1 calculateLineString __set "Z5=oc.Zp(5);O=oc.Oc;~*=λ x,y:O(~[(O(x) O(y)).m_tpl, Z5]); O(1,2,4,3,4) ~* O(0,1,2,3).conj() == O(4, 3, 1, 2, 0, 4, 3, 2)"
++0 blStt               __compare True
+
++1 calculateLineString __set "Z5=oc.Zp(5);O=oc.Oc;~*=λ x,y:O(~[(O(x) O(y)).m_tpl, Z5]); O(1,2,4,3,4) ~* O(0,1,2,3) == O(1, 2, 4, 3, 0, 1, 2, 3)"
++0 blStt               __compare True
+
++1 calculateLineString __set "Z5=oc.Zp(5);O=oc.Oc;~*=λ x,y:O(~[(O(x) O(y)).m_tpl, Z5]); O(1,2,4,3,4).conj() ~* O(0,1,2,3) == O(4, 0, 0, 3, 0, 4, 3, 2)"
++0 blStt               __compare True
+
+
+
+# 10.10.06 sfPPrcssr.py ギリシャ文字 η, Ζ が使えなかった
++1 calculateLineString __set "Α=1; 2Α==2"
++0 blStt               __compare True
++1 calculateLineString __set "Β=1; 2Β==2"
++0 blStt               __compare True
++1 calculateLineString __set "Γ=1; 2Γ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Δ=1; 2Δ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Ε=1; 2Ε==2"
++0 blStt               __compare True
++1 calculateLineString __set "Ζ=1; 2Ζ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Η=1; 2Η==2"
++0 blStt               __compare True
++1 calculateLineString __set "Θ=1; 2Θ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Ι=1; 2Ι==2"
++0 blStt               __compare True
++1 calculateLineString __set "Κ=1; 2Κ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Λ=1; 2Λ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Μ=1; 2Μ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Ν=1; 2Ν==2"
++0 blStt               __compare True
++1 calculateLineString __set "Ξ=1; 2Ξ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Ο=1; 2Ο==2"
++0 blStt               __compare True
++1 calculateLineString __set "Π=1; 2Π==2"
++0 blStt               __compare True
++1 calculateLineString __set "Ρ=1; 2Ρ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Σ=1; 2Σ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Τ=1; 2Τ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Υ=1; 2Υ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Φ=1; 2Φ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Χ=1; 2Χ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Ψ=1; 2Ψ==2"
++0 blStt               __compare True
++1 calculateLineString __set "Ω=1; 2Ω==2"
++0 blStt               __compare True
+
++1 calculateLineString __set "α=1; 2α==2"
++0 blStt               __compare True
++1 calculateLineString __set "β=1; 2β==2"
++0 blStt               __compare True
++1 calculateLineString __set "γ=1; 2γ==2"
++0 blStt               __compare True
++1 calculateLineString __set "δ=1; 2δ==2"
++0 blStt               __compare True
++1 calculateLineString __set "ε=1; 2ε==2"
++0 blStt               __compare True
++1 calculateLineString __set "ζ=1; 2ζ==2"
++0 blStt               __compare True
++1 calculateLineString __set "η=1; 2η==2"
++0 blStt               __compare True
++1 calculateLineString __set "θ=1; 2θ==2"
++0 blStt               __compare True
++1 calculateLineString __set "ι=1; 2ι==2"
++0 blStt               __compare True
++1 calculateLineString __set "κ=1; 2κ==2"
++0 blStt               __compare True
++1 calculateLineString __set "λ0=1; 2λ0==2"
++0 blStt               __compare True
++1 calculateLineString __set "μ=1; 2μ==2"
++0 blStt               __compare True
++1 calculateLineString __set "ν=1; 2ν==2"
++0 blStt               __compare True
++1 calculateLineString __set "ξ=1; 2ξ==2"
++0 blStt               __compare True
++1 calculateLineString __set "ο=1; 2ο==2"
++0 blStt               __compare True
++1 calculateLineString __set "π=1; 2π==2"
++0 blStt               __compare True
++1 calculateLineString __set "ρ=1; 2ρ==2"
++0 blStt               __compare True
++1 calculateLineString __set "σ=1; 2σ==2"
++0 blStt               __compare True
++1 calculateLineString __set "τ=1; 2τ==2"
++0 blStt               __compare True
++1 calculateLineString __set "υ=1; 2υ==2"
++0 blStt               __compare True
++1 calculateLineString __set "φ=1; 2φ==2"
++0 blStt               __compare True
++1 calculateLineString __set "χ=1; 2χ==2"
++0 blStt               __compare True
++1 calculateLineString __set "ψ=1; 2ψ==2"
++0 blStt               __compare True
++1 calculateLineString __set "ω=1; 2ω==2"
++0 blStt               __compare True
+
+
+# 10.10.05 mitr(..), enmitr(..) で generator 引数を複数渡す多重呼び出しを
+#したとき、外側のループだけで終了していた。
++1 calculateLineString __set "X,Y={4,5},{6,7,8}; len([(f,g) for f,g in mitr(mitr(X,X,X),mitr(Y,Y,Y))])"
++0 inStt               __compare 216
+
+# 10.10.04 ~== user operator を追加した
++1 calculateLineString __set "~== = sc.allclose; 3 ~== 3.000000001"
++0 blStt               __compare True
+ 
+# 10.10.02 user operator に関数を assign できなかった
++1 calculateLineString __set "~*=λ x,y: x y; 3 ~* 4"
++0 inStt               __compare 12
+
++1 __makeFile __tmp r"""'
+N=5\n
+seed(0)\n
+a,b,c=randint(N, size=(3,N))\n
+~* = sbst\n
+print a ~* b\n
+'"""
++1 converFileAndStore   __set "__tmp"
+
++1 __chkFlLn _tmC.py[10] r"k__tilda__UsOp_mul____ = sbst\n"
++1 __chkFlLn _tmC.py[11] r"print k__tilda__UsOp_mul____(a , b)\n"
+
+# 10.07.16 arctan(..) が計算できなかった
++1 calculateLineString __set "arctan(0.8)"
++0 scalarStt           __compare 0.674740942224
+
+#10.06.17 ((`s^2 + 6`s +998010)/(`s (`s^2+6`s+1000009))).m_plNumer.roots
+# が [-6.] になっていた。[-3.+999.j -3.-999.j] でなければならない
+# rational.py poly1d.getGCD(..) numerAt,denomAt = denomAt, residualAt が
+# numerAt,denomAt = numerAt, residualAt だった
++1 calculateLineString __set "nearlyEq(((`s^2 + 6`s +998010)/(`s (`s^2+6`s+1000009))).m_plNumer.roots, [-3.+999.j, -3.-999.j])"
++0 blStt               __compare True
+
+# ×10.03.13 ClRtnl の __neg__ が値を変更しないまま、さらに self を返していた
+# ×分子が 0 になっても、分母 m_plDenom は生きている
+# 10.06.15 分子が 0 のとき分母は 1 にする
+#+1 calculateLineString __set "cl=ClRtnl([1],[2,3]);( -cl +cl ).m_plDenom == poly1d([1, 3, 2.25])"
++1 calculateLineString __set "cl=ClRtnl([1],[2,3]);( -cl +cl ).m_plDenom == poly1d([1])"
++0 blStt               __compare True
+#+1 calculateLineString __set "cl=ClRtnl([1],[2,3]);( -cl +cl ).m_plDenom == poly1d([1, 1.5]) * poly1d([1, 1.5])"
+#+0 blStt               __compare True
+
+
+# 10.06.15 有理関数の加減乗除算で共通因子の分は二乗にならなくした
++1 calculateLineString __set "(`s^2+3`s+2)/(`s^2+5`s+6) == (`s+1)/(`s+3)"
++0 blStt               __compare True
+
+# 10.06.15 ts() のとき pF`==1e-9F` になっていた
++1 calculateLineString __set "ts();1pF`==1e-12F`"
++0 blStt               __compare True
+
+# 10.06.15 ts() 側の div が Dv_ のままだった
+# 10.06.01 div を Dv_ ではなく Jc_(..)(..).trace() を使ったものに変えた
++1 calculateLineString __set "f=λ r:(~[`X,`Y,`Z] - r)/norm(~[`X,`Y,`Z] - r)^3; `div(f([1,0,0])-f([-1,0,0]) )(0,0,0)"
++0 scalarStt           __compare 0
+
+
+# 10.06.16 ClRtnl での割り算でも共通因子を取り去るようにした
++1 calculateLineString __set "((`s+1)/(`s+2)) / ((`s+1)/(`s+2)) == 1"
++0 blStt               __compare True
+
+# 10.06.11 ClRtnl で 分母に同じ要素をもつときの加減算で分母に共通多項式部分があ
+#るとき、その多項式は分母多項式の積から除外する
+# <== 分母%分子 == 0 確認 --> 共通項の抹消 を行う <== 幾つかの例で誤差なしとして有効に働くか確認する
++1 calculateLineString __set "(ClRtnl([2],[1,2,3]) +ClRtnl([3],[1,2,3])).m_plDenom == poly1d([1,2,3])"
++0 blStt               __compare True
++1 calculateLineString __set "(ClRtnl([2],[1,2,3]) -ClRtnl([3],[2,4,6])).m_plDenom == poly1d([1,2,3])"
++0 blStt               __compare True
++1 calculateLineString __set "(ClRtnl([2],[1,2,3]) +ClRtnl([3,4],[3,6,9])).m_plDenom == poly1d([1,2,3])"
++0 blStt               __compare True
+
+# 10.06.10 ClRtnl で 0 行列との積 m_plDenom を分母どおしの積多項式にしていた。# 1 とするようにした
++1 calculateLineString __set "(ClRtnl([2]) 0).m_plDenom == poly1d(1)"
++0 blStt               __compare True
++1 calculateLineString __set "(0 ClRtnl([30])).m_plDenom == poly1d(1)"
++0 blStt               __compare True
++1 calculateLineString __set "(ClRtnl([1,2],[3,4,5]) 0).m_plDenom == poly1d(1)"
++0 blStt               __compare True
++1 calculateLineString __set "(0 ClRtnl([1,2],[3,4,5])).m_plDenom == poly1d(1)"
++0 blStt               __compare True
+
+# 10.06.10 ClRtnl で数値との __eq__, 
++1 calculateLineString __set "ClRtnl([0]) == 0"
++0 blStt               __compare True
++1 calculateLineString __set "ClRtnl( 0 ) == 0"
++0 blStt               __compare True
++1 calculateLineString __set "ClRtnl([0],[3]) == 0"
++0 blStt               __compare True
++1 calculateLineString __set "ClRtnl([0],[3]).m_plDenom == poly1d(1)"
++0 blStt               __compare True
+
+
+# 10.06.02 vct=ClTensor([0.1, 2.0]);krry(vct,vct) が ClFldTns instance になっていた
++1 calculateLineString __set "vct=ClTensor([0.1, 2.0]);isinstance(krry(vct,vct),ClTensor)"
+
+# 10.06.01 ClFldTns 行列で、要素が __call__ 属性を持ってさえいれば関数呼び出しを
+# 可能にした。ClAF 要素に限定していたのを止めた
++1 calculateLineString __set "P=oc.Pl; ~[P([1,2,3]),P([4,5,6])](1)[0]"
++0 scalarStt           __compare 6
+
+# 10.05.31 ClAF 要素の ClFldTns で Jc_ の inDim 引数が None のとき
+# inDim=shape[0] とする
++1 calculateLineString __set "(∂J(~[`X + `Y, `X `Y])(2,3)).shape==(2,2)"
++0 blStt               __compare True
++1 calculateLineString __set "(∂J(~[`X + `Y, `X `Y])(2,3))[0,0]"
++0 scalarStt           __compare 1
++1 calculateLineString __set "(∂J(~[`X + `Y, `X `Y])(2,3))[0,1]"
++0 scalarStt           __compare 1
++1 calculateLineString __set "(∂J(~[`X + `Y, `X `Y])(2,3))[1,0]"
++0 scalarStt           __compare 3
++1 calculateLineString __set "(∂J(~[`X + `Y, `X `Y])(2,3))[1,1]"
++0 scalarStt           __compare 2
+
+# 16.12.21 arcsin, arccos are multivalued functions. We set absolute value for image elements.
+# 10.05.30 numpy.arcsin, numpy.arccos が [-1,0,1] 以外の整数で nan になる。
+# これを numpy.arcsin(complex(ag)) の値をとるように対策した
++1 calculateLineString __set "abs(arcsin(-3).imag)"
++0 scalarStt           __compare 1.762747
++1 calculateLineString __set "abs(arcsin(-2).imag)"
++0 scalarStt           __compare 1.316958
++1 calculateLineString __set "abs(arcsin( 2).imag)"
++0 scalarStt           __compare 1.316958
+
++1 calculateLineString __set "abs(arccos(-3).imag)"
++0 scalarStt           __compare 1.762747
++1 calculateLineString __set "abs(arccos(-2).imag)"
++0 scalarStt           __compare 1.316958
++1 calculateLineString __set "abs(arccos( 2).imag)"
++0 scalarStt           __compare 1.316958
+
+
+#10.05.27 ((`X+1)^2)(2) == 4 になっていた。関数合成の意味にしていた。
++1 calculateLineString __set "((`X+1)^2)(2)"
+#+0 scalarStt           __compare 9
++0 inStt               __compare 9
+
++1 calculateLineString __set "(`X+`Y)(1,2,3,4)==3"
++0 blStt               __compare True
++1 calculateLineString __set "(`X+`Y+`Z)(1,2,3,4)==6"
++0 blStt               __compare True
++1 calculateLineString __set "(`X+`Y+`Z-`T)(1,2,3,4)==2"
++0 blStt               __compare True
+
++1 calculateLineString __set "∂x(`X+`Y+`Z-`T)(1,2,3,4)"
++0 scalarStt           __compare 1
++1 calculateLineString __set "∂y(`X+`Y+`Z-`T)(1,2,3,4)"
++0 scalarStt           __compare 1
++1 calculateLineString __set "∂z(`X+`Y+`Z-`T)(1,2,3,4)"
++0 scalarStt           __compare 1
++1 calculateLineString __set "∂t(`X+`Y+`Z-`T)(1,2,3,4)"
++0 scalarStt           __compare -1
+
++1 calculateLineString __set "∂x(λ x,y,z,t:x+y+z-t)(1,2,3,4)"
++0 scalarStt           __compare 1
++1 calculateLineString __set "∂y(λ x,y,z,t:x+y+z-t)(1,2,3,4)"
++0 scalarStt           __compare 1
++1 calculateLineString __set "∂z(λ x,y,z,t:x+y+z-t)(1,2,3,4)"
++0 scalarStt           __compare 1
++1 calculateLineString __set "∂t(λ x,y,z,t:x+y+z-t)(1,2,3,4)"
++0 scalarStt           __compare -1
+
++1 calculateLineString __set "`dx(λ x,y,z,t:x+y+z-t)(1,2,3,4)"
++0 scalarStt           __compare 1
++1 calculateLineString __set "`dy(λ x,y,z,t:x+y+z-t)(1,2,3,4)"
++0 scalarStt           __compare 1
++1 calculateLineString __set "`dz(λ x,y,z,t:x+y+z-t)(1,2,3,4)"
++0 scalarStt           __compare 1
++1 calculateLineString __set "`dt(λ x,y,z,t:x+y+z-t)(1,2,3,4)"
++0 scalarStt           __compare -1
+
++1 calculateLineString __set "∂2x(λ x,y,z,t:x^2+y^2+z^2-t^2)(2,2,3,4)"
++0 scalarStt           __compare 2
++1 calculateLineString __set "∂2y(λ x,y,z,t:x^2+y^2+z^2-t^2)(1,2,3,4)"
++0 scalarStt           __compare 2
++1 calculateLineString __set "∂2z(λ x,y,z,t:x^2+y^2+z^2-t^2)(1,2,3,4)"
++0 scalarStt           __compare 2
++1 calculateLineString __set "∂2t(λ x,y,z,t:x^2+y^2+z^2-t^2)(1,2,3,4)"
++0 scalarStt           __compare -2
+
++1 calculateLineString __set "`d2x(λ x,y,z,t:x^2+y^2+z^2-t^2)(2,2,3,4)"
++0 scalarStt           __compare 2
++1 calculateLineString __set "`d2y(λ x,y,z,t:x^2+y^2+z^2-t^2)(1,2,3,4)"
++0 scalarStt           __compare 2
++1 calculateLineString __set "`d2z(λ x,y,z,t:x^2+y^2+z^2-t^2)(1,2,3,4)"
++0 scalarStt           __compare 2
++1 calculateLineString __set "`d2t(λ x,y,z,t:x^2+y^2+z^2-t^2)(1,2,3,4)"
++0 scalarStt           __compare -2
+
+
+#10.05.26 `X,`Y,`Z,`T 変数を実装した
+
++1 calculateLineString __set "`X(1,2,3)"
+#+0 scalarStt           __compare 1
++0 inStt                __compare 1
++1 calculateLineString __set "`Y(1,2,3)"
+#+0 scalarStt           __compare 2
++0 inStt                __compare 2
++1 calculateLineString __set "`Z(1,2,3)"
+#+0 scalarStt           __compare 3
++0 inStt                __compare 3
++1 calculateLineString __set "`T(1,2,3)"
+#+0 scalarStt           __compare 3
++0 inStt                __compare 3
+
++1 calculateLineString __set "(`X^2)(1,2,3)==1"
++0 blStt               __compare True
++1 calculateLineString __set "(`Y^2)(1,2,3)==4"
++0 blStt               __compare True
++1 calculateLineString __set "(`Z^2)(1,2,3)==9"
++0 blStt               __compare True
++1 calculateLineString __set "(`T^2)(1,2,3)==9"
++0 blStt               __compare True
+
+
++1 calculateLineString __set "(`X^2+`Y^2)(1,2,3,4)==5"
++0 blStt               __compare True
++1 calculateLineString __set "(`X^2+`Y^2+`Z^2)(1,2,3,4)==14"
++0 blStt               __compare True
++1 calculateLineString __set "(`X^2+`Y^2+`Z^2-`T^2)(1,2,3,4)==-2"
++0 blStt               __compare True
+
++1 calculateLineString __set "float(sqrt(`X^2+`Y^2)(1,2,3,4))"
++0 scalarStt           __compare 2.2360679
+
+#10.05.24 ClFldTns に __call__ を追加し関数を扱えるようにした
++1 calculateLineString __set "~[sin,cos](0)[1]"
++0 scalarStt           __compare 1
++1 calculateLineString __set "~[1,`s,`s^2](2)[2]"
++0 scalarStt           __compare 4
+
+#10.05.24 下のような誤った表示になっていた
+# krry([poly1d([1,2]),poly1d([3,4,5])])
+# ===============================
+# [ 
+# 1 s + 2    2
+# 3 s + 4 s + 5]
++1 calculateLineString __set "str(krry([poly1d([1,2]),poly1d([3,4,5])]))[:35]"
++0 strStt              __compare "[poly1d([1, 2]), poly1d([3, 4, 5])]"
+
+#10.05.20 log,log10 が ~[1,2] 引数を与えても ndarray になっていた
++1 calculateLineString __set "isinstance(log(sc.array([1,2])), sc.ndarray)"
++0 blStt               __compare True
++1 calculateLineString __set "isinstance(log10(sc.array([1,2])), sc.ndarray)"
++0 blStt               __compare True
++1 calculateLineString __set "isinstance(log( [1,2]), ClTensor)"
++0 blStt               __compare True
++1 calculateLineString __set "isinstance(log10( [1,2]), ClTensor)"
++0 blStt               __compare True
+
++1 calculateLineString __set "isinstance(log(~[1,2]), ClTensor)"
++0 blStt               __compare True
++1 calculateLineString __set "isinstance(log10(~[1,2]), ClTensor)"
++0 blStt               __compare True
+
+#10.05.20 log,log10 が [1,2],[-1,2] を計算できていなかった
++1 calculateLineString __set "nearlyEq(log([1,2]), [0, 0.69314718])"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(log10([1,2]), [0, 0.30103])"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(log([-1,2]), [3.14159265j, 0.69314718])"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(log10([-1,2]), [1.364376j, 0.30103])"
++0 blStt               __compare True
+
+#10.05.13 sqrt, `X 関数に ndarray 引数を与えたときは ndarray を, 
+# ClTensor には ClTensor を返すようにした。ClTensor だけにしていた
++1 calculateLineString __set "vc=~[range(5)];type((`X^2)(vc)) == type(vc)"
++0 blStt               __compare True
++1 calculateLineString __set "vc=~[range(5)];type(`X(vc))==type(vc)"
++0 blStt               __compare True
+
++1 calculateLineString __set "vc=sc.arange(5);type((`X^2)(vc)) == type(vc)"
++0 blStt               __compare True
++1 calculateLineString __set "vc=sc.arange(5);type(`X(vc))==type(vc)"
++0 blStt               __compare True
+
+#15.02.01 
+# 2015.02.01 SNb:00075 : 0.97B?: add T, pQ: Tesra, elementary charge
++1 calculateLineString __set "ts(); pQ` == -eQ`"
++0 blStt               __compare True
++1 calculateLineString __set "ts(); T`  == V` s`/m`^2"
++0 blStt               __compare True
+
+#10.05.13 sqrt, `X 関数が sympy 単位付の引数値を受け付けるようにした
++1 calculateLineString __set "ts_(); v=2m`/s`;sqrt(v^2)==v"
++0 blStt               __compare True
++1 calculateLineString __set "ts_(); v=2m`/s`;(`X^2)(v)==v^2"
++0 blStt               __compare True
+
+#10.05.13 sqrt,log,log10 を numpy だけで済むように修正した
++1 calculateLineString __set "sqrt(-1) == `i"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(log(-1), pi `i)"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(log10(-1), 1.36437635384`i)"
++0 blStt               __compare True
+
+#vct=sc.sin([1,2,3]);sc.sin(vct)
+#===============================
+#[ 0.74562414  0.78907234  0.14065208]
++1 calculateLineString __set "nearlyEq((sin^2)([1,2,3]), [0.708073418274, 0.826821810432,0.0199148566748])"
++0 blStt               __compare True
+
+#10.05.03 int 正方行列の 0 べき乗が flaot 行列になっていた
++1 calculateLineString __set "mt=kzrs(3,3,int)^0;mt.dtype==int"
++0 blStt               __compare True
+
+#10.05.02 ClFldTns で vector * ClFldTns 演算が飛んでいた
++1 calculateLineString __set "G=oc.RS;g__:=~[[1,2],[2,1],G];vx`=~[5,6,G]; vx` g__ == ~[G(9),G(0x0c)]"
++0 blStt               __compare True
++1 calculateLineString __set "G=oc.RS;g__:=~[[1,2],[2,1],G];vx`= [5,6  ];vx` g__ == ~[G(9),G(0x0c)]"
++0 blStt               __compare True
+
+## can't pip mayavi date:2016/12/07
+##10,05.02 kqvr3d() の導通テスト N280 Atom では遅すぎるのでコメント・アウトする
+##×12.12.13 ClTensor.__equ__ 追加でエラーになったのでコメント・アウトしてみる
+#+1 calculateLineString __set "v,mt=klsp(-1,1,10),~[[0,-1],[1,0]];val=[[mt [y,x] for x in v]for y in v];kqvr3d(val);0==0"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "N=5;v=range(N);vcPs=[[[[x,y,z]for x in v]for y in v]for z in v] ;kqvr3d(vcPs,vcPs); 0==0"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "N=5;v=range(N);vcPs=[[[[x,y,z]for x in v]for y in v]for z in v] ;kqvr3d(vcPs);0==0"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "N=5;v=range(N);vcPs=~[[[x,y] for x in v] for y in v] ;kqvr3d(vcPs);0==0"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "N=5;v=range(N);vcPs=~[[[x,y] for x in v] for y in v] ;kqvr3d(vcPs, vcPs);0==0"
+#+0 blStt               __compare True
+#
+## 11.02.16 kqvr3d 未確認だった動作を確認しコードを修正しテストを追加する
+#+1 calculateLineString __set "ε=5;lst=klsp(-2.5,2.5,10); ag=list(mitr(lst,lst)); vAg=~[~[ε (`X-`X^3/3-`Y), `X/ε](x,y) for x,y in ag]; kqvr3d(ag, vAg);0==0"
+#+0 blStt               __compare True
+## vAg 側に list で書かれたデータを入れたとき、エラーになっていた
+#+1 calculateLineString __set "ε=5;lst=klsp(-2.5,2.5,10); ag=list(mitr(lst,lst)); vAg= [~[ε (`X-`X^3/3-`Y), `X/ε](x,y) for x,y in ag]; kqvr3d(ag, vAg);0==0"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "ε=3;lst=klsp(-2.5,2.5,10); ps=list(mitr(lst,lst,lst)); vl=~[~[ε (`X-`X^3/3-`Y), `X/ε,`Z](x,y,z) for x,y,z in ps]; kqvr3d(ps, vl);0==0"
+#+0 blStt               __compare True
+#
+##add test: ag :N x M x 2 array/ClTensor  vAg :N x M x 2 array/ClTensor
+#+1 calculateLineString __set "lst=range(-2,3); ag=[[(x,y) for x in lst] for y in lst]; vAg=[[(x^2,3y) for x in lst] for y in lst];kqvr3d(ag,vAg);0==0"
+#+0 blStt               __compare True
+#
+##add test: ag :N x M x 3 array/ClTensor  vAg :N x M x 3 array/ClTensor
+#+1 calculateLineString __set "lst=range(-2,3); ag=[[(x,y,3) for x in lst] for y in lst]; vAg=[[(x^2,3y,x+y) for x in lst] for y in lst];kqvr3d(ag,vAg);0==0"
+#+0 blStt               __compare True
+#
+##add test: ag :NxMxL x 3 array/ClTensor  vAg :NxMxL x 3 array/ClTensor
+#+1 calculateLineString __set "lst=range(-2,3); ag=[[[(x,y,z) for x in lst] for y in lst] for z in lst]; vAg=[[[(x^2,3y,x+y) for x in lst] for y in lst] for z in lst];kqvr3d(ag,vAg);0==0"
+#+0 blStt               __compare True
+#
+##add test: N x M x 2 array/ClTensor
+#+1 calculateLineString __set "lst=range(-2,3); ag=[[(x^2,3y) for x in lst] for y in lst];kqvr3d(ag);0==0"
+#+0 blStt               __compare True
+#
+#
+##add test: # N x M x L x 3 array/ClTensor
+#+1 calculateLineString __set "lst=range(-2,3); ag=[[[(x^2,3y,z) for x in lst] for y in lst] for z in lst];kqvr3d(ag);0==0"
+#+0 blStt               __compare True
+#
+## バグがあった ag :N x 2 array/ClTensor  and   2d function
+#+1 calculateLineString __set "lst=range(-2,3); ag=[(x,y) for x,y in mitr(lst,lst)];kqvr3d(ag,~[`X^2,3`Y]);0==0"
+#+0 blStt               __compare True
+#
+##add test: ag :N x 2 array/ClTensor  and   3d function -- 3D vector on a 0 hight plain
+#+1 calculateLineString __set "lst=range(-2,3); ag=[(x,y) for x,y in mitr(lst,lst)];kqvr3d(ag,~[`X^2,3`Y,`X+`Y]);0==0"
+#+0 blStt               __compare True
+#
+## バグがあった ag :N x 3 array/ClTensor  and   3d function
+#+1 calculateLineString __set "lst=range(-2,3); ag=[(x,y,z) for x,y,z in mitr(lst,lst,lst)];kqvr3d(ag,~[`X^2,3`Y,`Z]);0==0"
+#+0 blStt               __compare True
+#
+##add test: ag :N x M x 2 array/ClTensor  and  3d function --- 2D vector on a 0 hight plain
+#+1 calculateLineString __set "lst=range(-2,3); ag=[[(x,y) for x in lst] for y in lst];kqvr3d(ag,~[`X^2,3`Y]);0==0"
+#+0 blStt               __compare True
+#
+##add test: ag :N x M x 2 array/ClTensor  and  3d function --- 3D vector on a 0 hight 
+#+1 calculateLineString __set "lst=range(-2,3); ag=[[(x,y) for x in lst] for y in lst];kqvr3d(ag,~[`X^2,3`Y,`X+`Y]);0==0"
+#+0 blStt               __compare True
+#
+##add test: ag : N x M x L x 3 array/ClTensor  and  3d function
+#+1 calculateLineString __set "lst=range(-2,3); ag=[[[(x,y,z) for x in lst] for y in lst] for z in lst];kqvr3d(ag,~[`X^2,3`Y,`X+`Y]);0==0"
+#+0 blStt               __compare True
+#
+## 未実装だった N x M x 3 array/ClTensor
+##     3d vector on 0 plain
+#+1 calculateLineString __set "lst=range(-2,3); ag=[[[(x^2,3y,x+y+z) for x in lst] for y in lst] for z in lst];kqvr3d(ag);kqvr3d(ag);0==0"
+#+0 blStt               __compare True
+
+
+# 10.05.01 分解後の pp(..) 動作が試されていなかった
++1 calculateLineString __set "pp(`σy);0==0"
++0 blStt               __compare True
+
+# 10.05.01 eig,eigvals, eigh,eigvalsh の引数の個数が誤っていた
+# scipy と numpy で引数の個数が違った
++1 calculateLineString __set "eig(`σx)[0]==~[1,-1]"
++0 blStt               __compare True
++1 calculateLineString __set "eigvals(`σx)==~[1,-1]"
++0 blStt               __compare True
++1 calculateLineString __set "eigh(`σx)[0]==~[-1,1]"
++0 blStt               __compare True
++1 calculateLineString __set "eigvalsh(`σx)==~[-1,1]"
++0 blStt               __compare True
+
+
+# 10.04.30 sy.factorial() が shape==() の行列を返し、ClTensor を割るとエラー
++1 calculateLineString __set "sy();(`σx/sy.misc.factorial(2))[0,1] == 0.5"
++0 blStt               __compare True
+
+# ついでに、行列のべき乗に 小数点以下が 0 の floating 値も受け付けるようにした
+# 戻り値が float になってしまう関数が存在しえる
++1 calculateLineString __set "(`σx^2.0)[0,0]"
+#+0 blStt               __compare True
++0 scalarStt           __compare 1
++1 calculateLineString __set "(`σx^(2+0j))[0,0]"
++0 scalarStt           __compare 1
+
+
+# 10.04.20 基本関数と tuple, list の組み合わせで ClTensor を返すように改良した
++1 calculateLineString __set "quadR(exp(-`X^2), -sc.inf, sc.inf)"
++0 scalarStt           __compare 1.77245385091
+
++1 calculateLineString __set "isinstance(`X(arange(5)), sc.ndarray)"
++0 blStt               __compare True
++1 calculateLineString __set "isinstance(`X([1,2,3]), ClTensor)"
++0 blStt               __compare True
+
++1 calculateLineString __set "`X([1,2,3])[1]"
++0 scalarStt           __compare 2
+
++1 calculateLineString __set "(`X^2)([1,2,3])[1]"
++0 scalarStt           __compare 4
+#+1 calculateLineString __set "`X^2([1,2,3])[1]"
+#+0 scalarStt           __compare 4
+#<== `X^2([1,2,3]) は (`X**2) * [1,2,3] の意味になる
+#
++1 calculateLineString __set "(`X^2+1)(~[1,2,3])[1]"
++0 scalarStt           __compare 5
++1 calculateLineString __set "(`X^2+1)( [1,2,3])[1]"
++0 scalarStt           __compare 5
++1 calculateLineString __set "(`X+1)([1,2,3])[1]"
++0 scalarStt           __compare 3
+
++1 calculateLineString __set "`X([1,2,3]).dtype == float"
++0 blStt               __compare True
+
++1 calculateLineString __set "sin(`X+1)([1,2,3])[1]"
++0 scalarStt           __compare 0.14112001
+
++1 calculateLineString __set "sin(`X^2)([1,2,3])[1]"
++0 scalarStt           __compare -0.7568025
+
+
+
+# 10.04.18 quadC が分割のための修正がされきっていなかった
++1 calculateLineString __set "quadC(exp(`i `X),0,1).imag"
++0 scalarStt           __compare 0.459697694132
+
+# 10.03.23 高速化のあとの動作エラー
++1 calculateLineString __set "mt =~[ [1,2],[3,4]];mt.r"
++0 krryStt         __compare [1,2,3,4]
+
+
+# 10.03.19 basicFnctns.py permutate
++1 calculateLineString __set "tuple(sf.permutate([2,1,0],1))[2] == ((1, 2, 0), -1)"
++0 blStt               __compare True
+
+# 10.03.18 dct2:cos 変換のテスト
++1 calculateLineString __set "dct2([0.7, 0.6, 0.95, 0.85,  0.55, 0.1, 0.68, 0.43])[1]"
++0 scalarStt           __compare 0.36452813
+# norm 不変 == norm([0.7, 0.6, 0.95, 0.85,  0.55, 0.1, 0.68, 0.43])
++1 calculateLineString __set "norm(dct2([0.7, 0.6, 0.95, 0.85,  0.55, 0.1, 0.68, 0.43]))"
++0 scalarStt           __compare 1.8533213428868724
+
+# 10.03.16 非数値要素の辞書行列から行列を生成するとき ClTensor になっていた。
+# ClFldTns になる仕様である
++1 calculateLineString __set "dct={};dct[0],dct[1] = [`1,`0];isinstance(krry(dct),ClFldTns)"
++0 blStt               __compare True
+
+# 10.03.15 ClRtnl * ClFldTns 演算は、ClRtnl が __len__ method を持つので
+#  sequence だとして ClFldTns(ClRtnl instance) を行ってエラーになっていた。
+#  <== oc.Pl インスタンスに限って sequence と見なさなくした
++1 calculateLineString __set "Z =~[[`s,`s],[`s,`s]]; (Z[0,1] Z)[0,0].m_plNumer == poly1d([1,0,0])"
++0 blStt               __compare True
+
+# 10.03.15 oc.Pl*ClFldTns で assert エラーになっていた。oc.Pl は __len__ を持つため
+#+1 calculateLineString __set "Z =~Z =~[z_,z_]; all((Z[0] Z)[0].m_plnml == [1,0,0])"
+#+1 calculateLineString __set "Z =~Z =~[z_,z_, Z_];    ((Z[0] Z)[0].m_plnml == [1,0,0])"
++1 calculateLineString __set "Z =~[z_,z_, Z_]; (Z[0] Z)[0].m_plnml == ~[1,0,0, oc.BF]"
+#+1 calculateLineString __set "Z =~[z_,z_, Z_]; all((Z[0] Z)[0].m_plnml == [1,0,0])"
++0 blStt               __compare True
+
+
+# 10.03.03 ClAF/ClAFM
++1 calculateLineString __set "f,g=ClAF(sin), ClAF(cos);  f(2 f g + 3 g)(pi/3)"
++0 scalarStt           __compare 0.700121217943
+
+
+
+# 10.04.11  sqrt, log, log10 がマイナス引数に対して nan を返していた。
+# numpy と scipy での動作が異なることが原因です
++1 calculateLineString __set "(log(-1)).imag"
++0 scalarStt           __compare 3.14159265359
++1 calculateLineString __set "(sqrt(-1)).imag"
++0 scalarStt           __compare 1
++1 calculateLineString __set "(log10(-1)).imag"
++0 scalarStt           __compare 1.36437635384
+
+# 10.04.11  `1r::有理数の 1 を customize に追加した
++1 calculateLineString __set "ts_();str(`1r/3)"
++0 strStt              __compare "1/3"
+
+# 10.04.11  sympy 単位付の値も基本関数で扱えるようにした
++1 calculateLineString __set "ts_();sin(1uF`/(1uF`))"
++0 scalarStt           __compare 0.841470984808
++1 calculateLineString __set "ts_();exp(`i 1s`/s`).real"
++0 scalarStt           __compare 0.540302305868
++1 calculateLineString __set "ts_();exp(`i 1s`/s`).imag"
++0 scalarStt           __compare 0.841470984808
+
+# 10.04.10  `1+z_ で oc.BF.__add__ assert error に引っかかって飛んでいた
+# Z 変換の 1/Z の意味は 1/`s で表現させている
+# でも z_ の文字面からは z 変換がイメージされやすい。`P Bool 体多項式のマイナス
+# べき乗の意味には解釈してもらいにくい
+# <== とりあえずはマニュアルには載せない隠し機能とする
+# <== Pl と Pm の足し算も上手く動いていない
++1 calculateLineString __set "str(`1+z_)"
++0 strStt              __compare "1+z_"
+
+# 10.04.08  quadR(..) で si が入り込んでおり、飛んでいた
++1 calculateLineString __set "quadR(sin,0,pi)"
++0 scalarStt           __compare 2
+
+# 10.04.08  scipy.abs を基本関数に追加できない。
+# abs(..) は __abs__(..) を呼び出す、python の基本関数だからだ
++1 calculateLineString __set "abs(3)"
++0 inStt               __compare 3
++1 calculateLineString __set "abs([1,-2,3])[1]"
+#+0 inStt               __compare 2
+# 2012.12.25 ワン・ライナーでもファイル実行に変更したことにともない、例外発生時の実行行を保持できなくなった
+#+0 strExceptionStt     __compare "bad operand type for abs(): 'list' at excecuting:abs([1,-2,3])[1]"
++0 strExceptionStt     __compare "bad operand type for abs(): 'list'"
+
+# 10.04.06  expm/logm が動かなかった
++1 calculateLineString __set "logm(`σx)[0,0]"
++0 scalarStt           __compare 1.57079633j
++1 calculateLineString __set "expm(`σx)[0,0]"
++0 scalarStt           __compare 1.54308063
+
+# 10.04.03  ∂x(`x) が P_ 側にいっていた
++1 calculateLineString __set "ts_();∂x(`x)==1"
++0 blStt               __compare True
+
+# 10.04.02  ClRtnl のファイル変数読み出しができなくなっていた
++1 calculateLineString __set "tr();C,R=10uF`,390.0kΩ`; F4dgr:=(1/(1+`s C R))"
++1 calculateLineString __set "=:F4dgr;F4dgr"
++0  strExceptionStt    __compare ""
+
+# 10.03.28  kzrs(3,3,bool)^0 で 実数の単位行列を返していた
++1 calculateLineString __set "(kzrs(3,3,bool)^0).dtype == bool"
++0 blStt               __compare True
+# MSI cdrive では F4dgr の書き込みが終わる前に読み出しに行くので、kzrs(..) を挟む
+
+# 10.03.28  下の関数を ClAF(..) ラップし、関数自体での加減乗算と合成を可能にした。
+# exp log sin cos tan sinh cosh tanh arcsin arccos arctan log10  arctan2
++1 calculateLineString __set "(sin+2 cos)(1)"
++0 scalarStt           __compare 1.92207559654
+
++1 calculateLineString __set "exp(cos(2))"
++0 scalarStt           __compare 0.659583412423
+
+
+# 10.02.11 compose のテスト
++1 calculateLineString __set "compose(sin, cos)(0)"
++0 scalarStt           __compare 0.8414709848
++1 calculateLineString __set "compose(λ x:x^2, λ x:x*2)(3.0)"
++0 scalarStt           __compare 36
+
+# 10.02.11 bin_(..), bin(..) のテスト
++1 calculateLineString __set "bin_(0x15)"
++0 strStt              __compare "0b1_0101"
++1 calculateLineString __set "bin_(0x15,16)"
++0 strStt              __compare "0b0000_0000__0001_0101"
++1 calculateLineString __set "bin_(0x15,32)"
++0 strStt              __compare "0b0000_0000__0000_0000___0000_0000__0001_0101"
+
++1 calculateLineString __set "bin(0x15)"
++0 strStt              __compare "0b10101"
++1 calculateLineString __set "bin(0x15,16)"
++0 strStt              __compare "0b0000000000010101"
++1 calculateLineString __set "bin(0x15,32)"
++0 strStt              __compare "0b00000000000000000000000000010101"
+
+
+# 10.02.03 norm/normS が tensor にも使えることのテストを追加した
++1 calculateLineString __set "nearlyEq(norm(dict([(0, 1.2),(1, 5)])), 5.14198405287)"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(norm(`σx), 1.41421356237)"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(norm(`εL), 2.44948974278)"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(norm(set([1,2,3])), 3.74165738677)"
++0 blStt               __compare True
+
+# 10.02.03 normalize は ClTensor を返すようにした
++1 calculateLineString __set "type(normalize([1,2,3])) == ClTensor"
++0 blStt               __compare True
+
++1 calculateLineString __set "nearlyEq(normalize([1,2,3]),[0.26726124, 0.53452248, 0.80178373])"
++0 blStt               __compare True
+
++1 calculateLineString __set "nearlyEq(normalize(`σx),[[0, 0.70710678],[ 0.70710678,0]])"
++0 blStt               __compare True
+
++1 calculateLineString __set "nearlyEq(normalize(`εL)[2][:2,:2],[[0, 0.40824829],[-0.40824829,0]])"
++0 blStt               __compare True
+
+
++1 calculateLineString __set "nearlyEq(normSq([1,2,3]), 14)"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(normSq(dict([(0, 1.2),(1, 5)])), 26.44)"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(normSq(`σx), 2)"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(normSq(`εL), 6)"
++0 blStt               __compare True
++1 calculateLineString __set "normSq([2^30]) == 2^60"
++0 blStt               __compare True
++1 calculateLineString __set "normSq([2^1000]) == 2^2000"
++0 blStt               __compare True
+
+
+# 09.11.24 ~[dct] が 例外エラーになっていた
++1 calculateLineString __set "dct={(0,0):1, (0,1):2, (1,0):3, (1,1):4};~[dct][0,1]==2"
++0 blStt               __compare True
+
+# 09.11.22 ~[`σx] が [[[ 0.  1.],[ 1.  0.]]] になっていた。
+# <== [[ 0.  1.],[ 1.  0.]] でなければならない
++1 calculateLineString __set "~[`σx][0,1] == 1"
++0 blStt               __compare True
+
+# 09.11.19 ~[...] で list comprehension も扱えるように対策した
+# krry(1) == [1] not 1 ndarray
++1 calculateLineString __set "krry(1)[0] == 1"
++0 blStt               __compare True
++1 calculateLineString __set "~[1][0] == 1"
++0 blStt               __compare True
+
+
+# ×lst=[1,2,3];~[lst] == [[1,2,3]] 09.11,22 仕様変更
+# lst=[1,2,3];~[lst] == [1,2,3] krry 化
++1 calculateLineString __set "~[[1,2],[3,4]][0,1]==2"
++0 blStt               __compare True
++1 calculateLineString __set "lst=[1,2,3];~[lst][1]==2"
++0 blStt               __compare True
+# but krry([1,2,3]) == ~[1,2,3]
++1 calculateLineString __set "krry([1,2,3]).shape == (3,)"
++0 blStt               __compare True
+
+#12.12.13 ClTensor.__equ__ 追加のため、下を使わなくなったので修正、コメント・アウトする
++1 calculateLineString __set "~[k+1 for k in range(3)]==~[1,2,3]"
++0 blStt               __compare True
++1 calculateLineString __set "~[[1]]==[[1]]"
++0 blStt               __compare False
+#+1 calculateLineString __set "aTrue(~[k+1 for k in range(3)]==[1,2,3])"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "aTrue(~[[1]]==[[1]])"
+#+0 blStt               __compare True
+
+# ×lst=[1,2,3];~[lst] == [[1,2,3]] 09.11,22 仕様変更
+#+1 calculateLineString __set "~[[2]].shape==(1,1)"
++1 calculateLineString __set "~[[2]].shape==(1,)"
++0 blStt               __compare True
+
++1 calculateLineString __set "~[k+1 for k in range(1)][0]==1"
++0 blStt               __compare True
+
+
+# 09.11.18 ClTensor 行列のとき単位系の積／商ができていなかった
++1 calculateLineString __set "dct={};for idx in mrng(2,2):dct[idx]=2m`;mt=krry(dct)/ m`; mt==~[[2,2],[2,2]]"
++0 blStt               __compare True
++1 calculateLineString __set "dct={};for idx in mrng(2,2):dct[idx]=2/m`;mt=krry(dct) m`; mt==~[[2,2],[2,2]]"
++0 blStt               __compare True
+
+
+# 09.11.13 ClTensor で tuple/list/ClTensor を要素とする ClTensor を作れるようにした
++1 calculateLineString __set "(2 krry({0:~[1,2], 1:~[3,4]}))[1] == ~[6,8]"
++0 blStt               __compare True
+
++1 calculateLineString __set "krry({0:~[1,2], 1:~[3,4]})[0] == ~[1,2]"
++0 blStt               __compare True
+
+
+# 09.09.10 行列の rttSq, sftSq が blDeepCopy = False では誤動作するので、
+# blDeepCopy = True の強制的に設定するようにした
+
++1 calculateLineString __set "aTrue(shftSq(arange(3 * 4).reshape(3,4))[:,1] == [0,1,5])"
++0 blStt               __compare True
+
++1 calculateLineString __set "Z5 = oc.Zp(5);mt=(krry(range(3 * 4), Z5).reshape(3,4)); shftSq(mt)[:,1]==~[0,1,0,Z5]"
++0 blStt               __compare True
+
++1 calculateLineString __set "aTrue(rttSq(arange(3 * 4).reshape(3,4))[:,1] == [9,1,5])"
++0 blStt               __compare True
+
++1 calculateLineString __set "Z5 = oc.Zp(5);mt=(krry(range(3 * 4), Z5).reshape(3,4)); rttSq(mt)[:,1]==~[4,1,0,Z5]"
++0 blStt               __compare True
+
++1 calculateLineString __set "vt=krry(range(4),ftype=int); rttSq(vt)==krry([3,0,1,2],ftype=int)"
++0 blStt               __compare True
+
+
+#09.09.08 ClFldTns に __neg__ が無かった
++1 calculateLineString __set "Z3=oc.Zp(3);aTrue(-~[Z3(1),Z3(0),Z3(2)] == ~[Z3(2),Z3(0),Z3(1)])"
++0 blStt               __compare True
+
+# 09.09.01 assert `σx.m_dtrm==-1;`σx.r[1]=0;`σx.m_dtrm==-1
+# .r で要素を変更したとき、m_dtrm, m_inv 属性は残ったままになる
++1 calculateLineString __set "mt=~[[0,1],[1,0]];assert mt.m_dtrm==-1;mt.r[1]=0;mt.m_dtrm==-1"
++0 blStt               __compare False
+
++1 calculateLineString __set "mt=~[[0,1],[1,0], oc.BF];assert mt.m_dtrm == 1;mt.r[1]=`0;mt.m_dtrm == 1"
++0 blStt               __compare False
+
+# 09.08.19 multiple iterator:mitr(..), enmitr(..) を追加した
++1 calculateLineString __set "s=[1,2];list(mitr(s,s))[0]==(1,1)"
++0 blStt               __compare True
++1 calculateLineString __set "s=[1,2];list(mitr(s,s))[1]==(1,2)"
++0 blStt               __compare True
+
++1 calculateLineString __set "s=[1,2,3];list(mitr(s,s))[0]==(1,1)"
++0 blStt               __compare True
++1 calculateLineString __set "s=[1,2,3];list(mitr(s,s))[1]==(1,2)"
++0 blStt               __compare True
+
++1 calculateLineString __set "s=[1,2];list(mitr(s,s,s))[0]==(1,1,1)"
++0 blStt               __compare True
++1 calculateLineString __set "s=[1,2];list(mitr(s,s,s))[1]==(1,1,2)"
++0 blStt               __compare True
+
++1 calculateLineString __set "s=[1,2,3];list(mitr(s,s,s))[0]==(1,1,1)"
++0 blStt               __compare True
++1 calculateLineString __set "s=[1,2,3];list(mitr(s,s,s))[1]==(1,1,2)"
++0 blStt               __compare True
+
+
++1 calculateLineString __set "s=[1,2];list(enmitr(s,s))[0]==((0,0),(1,1))"
++0 blStt               __compare True
++1 calculateLineString __set "s=[1,2];list(enmitr(s,s))[1]==((0,1),(1,2))"
++0 blStt               __compare True
+
++1 calculateLineString __set "s=[1,2,3];list(enmitr(s,s))[0]==((0,0),(1,1))"
++0 blStt               __compare True
++1 calculateLineString __set "s=[1,2,3];list(enmitr(s,s))[1]==((0,1),(1,2))"
++0 blStt               __compare True
+
++1 calculateLineString __set "s=[1,2];list(enmitr(s,s,s))[0]==((0,0,0),(1,1,1))"
++0 blStt               __compare True
++1 calculateLineString __set "s=[1,2];list(enmitr(s,s,s))[1]==((0,0,1),(1,1,2))"
++0 blStt               __compare True
+
++1 calculateLineString __set "s=[1,2,3];list(enmitr(s,s,s))[0]==((0,0,0),(1,1,1))"
++0 blStt               __compare True
++1 calculateLineString __set "s=[1,2,3];list(enmitr(s,s,s))[1]==((0,0,1),(1,1,2))"
++0 blStt               __compare True
+
++1 calculateLineString __set "s=[1,2];list(mitr(s,3))[0]==(1,0)"
++0 blStt               __compare True
++1 calculateLineString __set "s=[1,2];list(mitr(s,3))[1]==(1,1)"
++0 blStt               __compare True
+
++1 calculateLineString __set "s=[1,2];list(enmitr(s,3))[0]==((0,0),(1,0))"
++0 blStt               __compare True
++1 calculateLineString __set "s=[1,2];list(enmitr(s,3))[1]==((0,1),(1,1))"
++0 blStt               __compare True
+
++1 calculateLineString __set "s=[1,2];list(mitr(s, 3.0))[0]==(1,0)"
++0 blStt               __compare True
++1 calculateLineString __set "s=[1,2];list(mitr(s, 3.0))[1]==(1,1)"
++0 blStt               __compare True
+
++1 calculateLineString __set "s=[1,2];list(enmitr(s, 3.1))[0]==((0,0),(1,0))"
++0 blStt               __compare True
++1 calculateLineString __set "s=[1,2];list(enmitr(s, 3.1))[1]==((0,1),(1,1))"
++0 blStt               __compare True
+
+# 09.08.19 v=3.0; mrng(3, 3) がエラーになっていた。
++1 calculateLineString __set "v=3.0;list(mrng(v,3))[0]==(0,0)"
+
+# 09.08.15 combinate が set instance を扱えなかった
++1 calculateLineString __set "list(combinate(set([0,1,2]),2))==[(0,1),(0,2),(1,2)]"
++0 blStt               __compare True
+
+# 09.06.14 object ClTensor で要素も ClTensor にすると、ファイル変数を読み出せない
++1 calculateLineString __set "vct = kzrs(2,object);vct[0]=~[1,2]; vct[1]=~[3,4];temp:=vct"
++1 calculateLineString __set "vct=:temp; vct[0] == ~[1,2]"
++0 blStt               __compare True
+
+#16.12.21 python(x,y) type is np.float64 and ubunt python2k is float
++1 calculateLineString __set "vct=krry(~[1,2],~[3,4], object);type(vct[0,0]) in (float, np.float64)"
++0 blStt               __compare True
+
+# 09.06.11 ClFldTns.reshape(..) がない
++1 calculateLineString __set "N=3;mt=krry(range(N*N),oc.BF).reshape(N,N);mt[2,2]==`0"
++0 blStt               __compare True
+
+# 09.06.11 ClFldTns.m_dtrm がエラー
++1 calculateLineString __set "N=3;mt=krry(sc.arange(N*N).reshape(N,N),oc.BF);mt.m_dtrm == `0"
++0 blStt               __compare True
+
+# 09.05.11 Jc_ で、行列戻り値のとき、インデックス順序が判定していた
++1 calculateLineString __set "f=λ x,y:~[[11*x + 13*y, 17*x + 19*y],[2*x+3*y, 5*x+7*y]];nearlyEq(∂J(f)(1,1), [[[11,13],[17,19]],[[2,3],[5,7]]])"
++0 blStt               __compare True
+
+# 09.05.03 一変数一戻り値関数の Jc_ がエラーになっていた
++1 calculateLineString __set "nearlyEq(∂J(λ x:~[x])(2), [[1.]])"
++0 blStt               __compare True
+
+# 09.05.01 scipy.sqrt を scipy.special.sqrt から scipy.sqrt に変更数
+# special.sqrt
+
++1 calculateLineString __set "3+4   # ( not paired paren bracket"
++0 inStt               __compare 7
+
++1 calculateLineString __set "3+4   # 'not paired single quote"
++0 inStt               __compare 7
+
+# 09.04.28 `σz/[[1,0],[0,1]] がkrry([1,2]) {0:3,1:4} 結果が NaN を含んでいた
++1 calculateLineString __set "nearlyEq(`σz/~[[1,0],[0,1]],[[1,0],[0,-1]])"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(`σz/[[1,0],[0,1]],[[1,0],[0,-1]])"
++0 blStt               __compare True
+
+# 09.04.26 三階以上のテンソル積でも推移率が成り立つようにした
++1 calculateLineString __set "mt=kzrs(2,2,2);mt.r[:]=range(2^3);nearlyEq((`σx `σz) mt,`σx (`σz mt))"
++0 blStt               __compare True
+
+# 09.04.24 nearyEq(..) 関数を追加した
++1 calculateLineString __set "nearlyEq(3, 3.0000000001)"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(3, 4)"
++0 blStt               __compare False
++1 calculateLineString __set "nearlyEq([3,4], [3.0000000001, 4])"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq([3,3.00000001], 3)"
++0 blStt               __compare True
+
+# 09.04.24 nearyEq(..) 関数を追加した
++1 calculateLineString __set "nearlyEq(3, 3.0000000001)"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq(3, 4)"
++0 blStt               __compare False
++1 calculateLineString __set "nearlyEq([3,4], [3.0000000001, 4])"
++0 blStt               __compare True
++1 calculateLineString __set "nearlyEq([3,3.00000001], 3)"
++0 blStt               __compare True
+
+#09.04.20 三階以上の辞書行列でエラーになっていた
++1 calculateLineString    __set "N=3;dctAt={};for idx in mrng(N,N,N):dctAt[idx]=1;mt=krry(dctAt);normSq(mt)"
++0 scalarStt              __compare 27
+# 09.04.20 ベクトルの辞書から ClTensor を生成するとエラーになっていた
++1 calculateLineString __set "dctAt={};for k in range(4):dctAt[k] = 1; ClTensor(dctAt) == ~[1,1,1,1]"
++0 blStt               __compare True
+
+# 09.04.20 Jc_ に Nl_ の機能を持たせた
++1 calculateLineString __set "(Jc_(λ x,y,z:x^2+y^2+z^2))(1,2,3)[0]"
++0 scalarStt           __compare 2
+
+# ******************* sfShot.jot.09.04.17 begin ******************************
+# 09.04.17 norm test
+# by itself 単独で
++1 calculateLineString __set "norm(True)"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(False)"
++0 scalarStt           __compare 0
++1 calculateLineString __set "norm(3)"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(long(3))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(3.1)"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm(1+2j)"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm(`1)"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(`0)"
++0 scalarStt           __compare 0
++1 calculateLineString __set "norm(oc.ClOctonion(1,2,3,4,5,6,7,8))"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm(oc.Pl(1,2,3))"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm(`P^3 + `P + `1)"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(z_^3 + z_ + 1)"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm(Z5(8))"
++0 scalarStt           __compare 3
+
+# list container
++1 calculateLineString __set "norm([True,False])"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm([3,0])"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm([long(3),long(0)])"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm([3.1, 0])"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm([1+2j,0])"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm([`1,`0])"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm([O(1,2,3,4,5,6,7,8),O(0)])"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm([oc.Pl(1,2,3),oc.Pl(0)])"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm([`P^3 + `P + `1,PB(0)])"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm([z_^3 + z_ + 1,Z_(0)])"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm([Z5(8),Z5(0)])"
++0 scalarStt           __compare 3
+
+# length 1 list container
++1 calculateLineString __set "norm([True])"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm([3])"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm([long(3)])"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm([3.1])"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm([1+2j])"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm([`1])"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm([O(1,2,3,4,5,6,7,8)])"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm([oc.Pl(1,2,3)])"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm([`P^3 + `P + `1])"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm([z_^3 + z_ + 1])"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm([Z5(8)])"
++0 scalarStt           __compare 3
+
+# tuple container
++1 calculateLineString __set "norm( (True,False) )"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm( (3,0) )"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm( (long(3),long(0)) )"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm( (3.1, 0) )"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm( (1+2j,0) )"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm( (`1,`0) )"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm( (O(1,2,3,4,5,6,7,8),O(0)) )"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm( (oc.Pl(1,2,3),oc.Pl(0)) )"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm( (`P^3 + `P + `1,PB(0)) )"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm( (z_^3 + z_ + 1,Z_(0)) )"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm( (Z5(8),Z5(0)) )"
++0 scalarStt           __compare 3
+
+# dictionary container
++1 calculateLineString __set "norm( {1:True,2:False} )"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm( {1:3,2:0} )"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm( {1:long(3),2:long(0)} )"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm( {1:3.1, 2:0} )"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm( {1:1+2j,2:0} )"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm( {1:`1,2:`0} )"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm( {1:O(1,2,3,4,5,6,7,8),2:O(0)} )"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm( {1:oc.Pl(1,2,3),2:oc.Pl(0)} )"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm( {1:`P^3 + `P + `1,2:PB(0)} )"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm( {1:z_^3 + z_ + 1,2:Z_(0)} )"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm( {1:Z5(8),2:Z5(0)} )"
++0 scalarStt           __compare 3
+
+
+#============== scipy.array vector/matrix container =========================
++1 calculateLineString __set "norm(sc.array([True,False]))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(sc.array([3,0]))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(sc.array([long(3),long(0)]))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(sc.array([3.1, 0]))"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm(sc.array([1+2j,0]))"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm(sc.array([`1,`0]))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm(sc.array([O(1,2,3,4,5,6,7,8),O(0)]))"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm(sc.array([oc.Pl(1,2,3),oc.Pl(0)]))"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm(sc.array([`P^3 + `P + `1,PB(0)]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(sc.array([z_^3 + z_ + 1,Z_(0)]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm(sc.array([Z5(8),Z5(0)]))"
++0 scalarStt           __compare 3
+
+# shape == () scipy.array container
++1 calculateLineString __set "norm(sc.array(True))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(sc.array(True))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(sc.array(3))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(sc.array(long(3)))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(sc.array(3.1))"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm(sc.array(1+2j))"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm(sc.array(`1))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm(sc.array(O(1,2,3,4,5,6,7,8)))"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm(sc.array(oc.Pl(1,2,3)))"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm(sc.array(`P^3 + `P + `1))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(sc.array(z_^3 + z_ + 1))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm(sc.array(Z5(8)))"
++0 scalarStt           __compare 3
+
+# array matrix container
++1 calculateLineString __set "norm(sc.array([[True,False],[False,True]]))"
++0 scalarStt           __compare 1.414214
++1 calculateLineString __set "norm(sc.array([[1,0],[1,1]]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(sc.array([[long(1),long(0)],[long(1),long(1)]]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(sc.array([[1.0, 0.0],[1.0, 1.0]]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(sc.array([[1+1j,0j],[1, 1j]]))"
++0 scalarStt           __compare 2
++1 calculateLineString __set "norm(sc.array([[`1,`0],[`1,`1]]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "O=oc.ClOctonion;norm(sc.array([[O(1,2,3,4,5,6,7,8),O(0)],[O(1),O(1)]]))"
++0 scalarStt           __compare 14.3527  __prcsnRate 100
++1 calculateLineString __set "norm(sc.array([[oc.Pl(1,2,3),oc.Pl(0)],[oc.Pl(1),oc.Pl(1)]]))"
++0 scalarStt           __compare 4
++1 calculateLineString __set "norm(sc.array([[`P^3 + `P + `1,PB(0)],[`P,`P]]))"
++0 scalarStt           __compare  2.23606798
++1 calculateLineString __set "norm(sc.array([[z_^3 + z_ + 1,Z_(0)],[z_,z_]]))"
++0 scalarStt           __compare  2.23606798
++1 calculateLineString __set "Z5=oc.Zp(5);norm(sc.array([[Z5(8),Z5(0)],[Z5(1),Z5(1)]]))"
++0 scalarStt           __compare 3.31662479
+
+
+#============== ClTensor vector/matrix container =========================
+# ClTensor vector container
++1 calculateLineString __set "norm(ClTensor([True,False], dtype=bool))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(ClTensor([3,0],dtype=int))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(ClTensor([long(3),long(0)],dtype=long))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(ClTensor([3.1, 0]))"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm(ClTensor([1+2j,0]))"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm(ClTensor([`1,`0],dtype=object))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm(ClTensor([O(1,2,3,4,5,6,7,8),O(0)],dtype=object))"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm(ClTensor([oc.Pl(1,2,3),oc.Pl(0)],dtype=object))"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm(ClTensor([`P^3 + `P + `1,PB(0)],dtype=object))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(ClTensor([z_^3 + z_ + 1,Z_(0)],dtype=object))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm(ClTensor([Z5(8),Z5(0)],dtype=object))"
++0 scalarStt           __compare 3
+
+# shape == () ClTensor container
++1 calculateLineString __set "norm(ClTensor(True,dtype=bool))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(ClTensor(True,dtype=bool))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(ClTensor(3,dtype=int))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(ClTensor(long(3),dtype=long))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(ClTensor(3.1))"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm(ClTensor(1+2j))"
++0 scalarStt           __compare 2.236068
+#   We must set object type because ClTensor dosen't have __float__ method
++1 calculateLineString __set "norm(ClTensor(`1, dtype=object))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm(ClTensor(O(1,2,3,4,5,6,7,8), dtype=object))"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm(ClTensor(oc.Pl(1,2,3), dtype=object))"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm(ClTensor(`P^3 + `P + `1, dtype=object))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(ClTensor(z_^3 + z_ + 1, dtype=object))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm(ClTensor(Z5(8), dtype=object))"
++0 scalarStt           __compare 3
+
+# ClTensor matrix container
++1 calculateLineString __set "norm(ClTensor([[True,False],[False,True]], dtype=bool))"
++0 scalarStt           __compare 1.414214
++1 calculateLineString __set "norm(ClTensor([[1,0],[1,1]], dtype=int))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(ClTensor([[long(1),long(0)],[long(1),long(1)]], dtype=long))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(ClTensor([[1.0, 0.0],[1.0, 1.0]]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(ClTensor([[1+1j,0j],[1, 1j]]))"
++0 scalarStt           __compare 2
++1 calculateLineString __set "norm(ClTensor([[`1,`0],[`1,`1]], dtype=oc.BF))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "O=oc.ClOctonion;norm(ClTensor([[O(1,2,3,4,5,6,7,8),O(0)],[O(1),O(1)]], dtype=object))"
++0 scalarStt           __compare 14.3527  __prcsnRate 100
++1 calculateLineString __set "norm(ClTensor([[oc.Pl(1,2,3),oc.Pl(0)],[oc.Pl(1),oc.Pl(1)]], dtype=object))"
++0 scalarStt           __compare 4
++1 calculateLineString __set "norm(ClTensor([[`P^3 + `P + `1,PB(0)],[`P,`P]], dtype=object))"
++0 scalarStt           __compare  2.23606798
++1 calculateLineString __set "norm(ClTensor([[z_^3 + z_ + 1,Z_(0)],[z_,z_]], dtype=object))"
++0 scalarStt           __compare  2.23606798
++1 calculateLineString __set "Z5=oc.Zp(5);norm(ClTensor([[Z5(8),Z5(0)],[Z5(1),Z5(1)]], dtype=object))"
++0 scalarStt           __compare 3.31662479
+
+
+#============== ClFldTns vector/matrix container =========================
++1 calculateLineString __set "norm(ClFldTns([True,False], ftype=bool))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(ClFldTns([3,0],ftype=int))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(ClFldTns([long(3),long(0)],ftype=long))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(ClFldTns([3.1, 0], ftype = float))"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm(ClFldTns([1+2j,0], ftype=complex))"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm(ClFldTns([`1,`0],ftype=oc.BF))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm(ClFldTns([O(1,2,3,4,5,6,7,8),O(0)],ftype=O))"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm(ClFldTns([oc.Pl(1,2,3),oc.Pl(0)],ftype=oc.Pl))"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm(ClFldTns([`P^3 + `P + `1,PB(0)],ftype=PB))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(ClFldTns([z_^3 + z_ + 1,Z_(0)],ftype=Z_))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm(ClFldTns([Z5(8),Z5(0)],ftype=Z5))"
++0 scalarStt           __compare 3
+
+# shape == () ClFldTns container
++1 calculateLineString __set "norm(ClFldTns(True,ftype=bool))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(ClFldTns(True,ftype=bool))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(ClFldTns(3,ftype=int))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(ClFldTns(long(3),ftype=long))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(ClFldTns(3.1, ftype=float))"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm(ClFldTns(1+2j, ftype=complex))"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm(ClFldTns(`1, ftype=oc.BF))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm(ClFldTns(O(1,2,3,4,5,6,7,8), ftype=O))"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm(ClFldTns(oc.Pl(1,2,3), ftype=oc.Pl))"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm(ClFldTns(`P^3 + `P + `1, ftype=PB))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(ClFldTns(z_^3 + z_ + 1, ftype=Z_))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm(ClFldTns(Z5(8), ftype=Z5))"
++0 scalarStt           __compare 3
+
+# ClFldTns matrix container
++1 calculateLineString __set "norm(ClFldTns([[True,False],[False,True]], ftype=bool))"
++0 scalarStt           __compare 1.414214
++1 calculateLineString __set "norm(ClFldTns([[1,0],[1,1]], ftype=int))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(ClFldTns([[long(1),long(0)],[long(1),long(1)]], ftype=long))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(ClFldTns([[1.0, 0.0],[1.0, 1.0]], ftype=float))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(ClFldTns([[1+1j,0j],[1, 1j]], ftype=complex))"
++0 scalarStt           __compare 2
++1 calculateLineString __set "norm(ClFldTns([[`1,`0],[`1,`1]], ftype=oc.BF))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "O=oc.ClOctonion;norm(ClFldTns([[O(1,2,3,4,5,6,7,8),O(0)],[O(1),O(1)]], ftype=O))"
++0 scalarStt           __compare 14.3527  __prcsnRate 100
++1 calculateLineString __set "norm(ClFldTns([[oc.Pl(1,2,3),oc.Pl(0)],[oc.Pl(1),oc.Pl(1)]], ftype=oc.Pl))"
++0 scalarStt           __compare 4
++1 calculateLineString __set "norm(ClFldTns([[`P^3 + `P + `1,PB(0)],[`P,`P]], ftype=PB))"
++0 scalarStt           __compare  2.23606798
++1 calculateLineString __set "norm(ClFldTns([[z_^3 + z_ + 1,Z_(0)],[z_,z_]], ftype=Z_))"
++0 scalarStt           __compare  2.23606798
++1 calculateLineString __set "Z5=oc.Zp(5);norm(ClFldTns([[Z5(8),Z5(0)],[Z5(1),Z5(1)]], ftype=Z5))"
++0 scalarStt           __compare 3.31662479
+
+
+#============== kryy:ClTensor vector/matrix container =========================
+# ClTensor vector container
++1 calculateLineString __set "norm(krry([True,False], dtype=bool))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(krry([3,0],dtype=int))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(krry([long(3),long(0)],dtype=long))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(krry([3.1, 0]))"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm(krry([1+2j,0]))"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm(krry([`1,`0],dtype=object))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm(krry([O(1,2,3,4,5,6,7,8),O(0)],dtype=object))"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm(krry([oc.Pl(1,2,3),oc.Pl(0)],dtype=object))"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm(krry([`P^3 + `P + `1,PB(0)],dtype=object))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(krry([z_^3 + z_ + 1,Z_(0)],dtype=object))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm(krry([Z5(8),Z5(0)],dtype=object))"
++0 scalarStt           __compare 3
+
+# shape == () krry:ClTensor container
++1 calculateLineString __set "norm(krry(True,dtype=bool))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(krry(True,dtype=bool))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(krry(3,dtype=int))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(krry(long(3),dtype=long))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(krry(3.1))"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm(krry(1+2j))"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm(krry(`1, dtype=object))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm(krry(O(1,2,3,4,5,6,7,8), dtype=object))"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm(krry(oc.Pl(1,2,3), dtype=object))"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm(krry(`P^3 + `P + `1, dtype=object))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(krry(z_^3 + z_ + 1, dtype=object))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm(krry(Z5(8), dtype=object))"
++0 scalarStt           __compare 3
+
+# krry:ClTensor matrix container
++1 calculateLineString __set "norm(krry([[True,False],[False,True]], dtype=bool))"
++0 scalarStt           __compare 1.414214
++1 calculateLineString __set "norm(krry([[1,0],[1,1]], dtype=int))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(krry([[long(1),long(0)],[long(1),long(1)]], dtype=long))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(krry([[1.0, 0.0],[1.0, 1.0]]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(krry([[1+1j,0j],[1, 1j]]))"
++0 scalarStt           __compare 2
++1 calculateLineString __set "norm(krry([[`1,`0],[`1,`1]], dtype=oc.BF))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "O=oc.ClOctonion;norm(krry([[O(1,2,3,4,5,6,7,8),O(0)],[O(1),O(1)]], dtype=object))"
++0 scalarStt           __compare 14.3527  __prcsnRate 100
++1 calculateLineString __set "norm(krry([[oc.Pl(1,2,3),oc.Pl(0)],[oc.Pl(1),oc.Pl(1)]], dtype=object))"
++0 scalarStt           __compare 4
++1 calculateLineString __set "norm(krry([[`P^3 + `P + `1,PB(0)],[`P,`P]], dtype=object))"
++0 scalarStt           __compare  2.23606798
++1 calculateLineString __set "norm(krry([[z_^3 + z_ + 1,Z_(0)],[z_,z_]], dtype=object))"
++0 scalarStt           __compare  2.23606798
++1 calculateLineString __set "Z5=oc.Zp(5);norm(krry([[Z5(8),Z5(0)],[Z5(1),Z5(1)]], dtype=object))"
++0 scalarStt           __compare 3.31662479
+
+#============== kryy:ClFldTns vector/matrix container =========================
++1 calculateLineString __set "norm(krry([True,False], ftype=bool))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(krry([3,0],ftype=int))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(krry([long(3),long(0)],ftype=long))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(krry([3.1, 0], ftype = float))"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm(krry([1+2j,0], ftype=complex))"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm(krry([`1,`0],ftype=oc.BF))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm(krry([O(1,2,3,4,5,6,7,8),O(0)],ftype=O))"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm(krry([oc.Pl(1,2,3),oc.Pl(0)],ftype=oc.Pl))"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm(krry([`P^3 + `P + `1,PB(0)],ftype=PB))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(krry([z_^3 + z_ + 1,Z_(0)],ftype=Z_))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm(krry([Z5(8),Z5(0)],ftype=Z5))"
++0 scalarStt           __compare 3
+
+# shape == () krry container
++1 calculateLineString __set "norm(krry(True,ftype=bool))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(krry(True,ftype=bool))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(krry(3,ftype=int))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(krry(long(3),ftype=long))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(krry(3.1, ftype=float))"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm(krry(1+2j, ftype=complex))"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm(krry(`1, ftype=oc.BF))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm(krry(O(1,2,3,4,5,6,7,8), ftype=O))"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm(krry(oc.Pl(1,2,3), ftype=oc.Pl))"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm(krry(`P^3 + `P + `1, ftype=PB))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(krry(z_^3 + z_ + 1, ftype=Z_))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm(krry(Z5(8), ftype=Z5))"
++0 scalarStt           __compare 3
+
+# krry matrix container
++1 calculateLineString __set "norm(krry([[True,False],[False,True]], ftype=bool))"
++0 scalarStt           __compare 1.414214
++1 calculateLineString __set "norm(krry([[1,0],[1,1]], ftype=int))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(krry([[long(1),long(0)],[long(1),long(1)]], ftype=long))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(krry([[1.0, 0.0],[1.0, 1.0]], ftype=float))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(krry([[1+1j,0j],[1, 1j]], ftype=complex))"
++0 scalarStt           __compare 2
++1 calculateLineString __set "norm(krry([[`1,`0],[`1,`1]], ftype=oc.BF))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "O=oc.ClOctonion;norm(krry([[O(1,2,3,4,5,6,7,8),O(0)],[O(1),O(1)]], ftype=O))"
++0 scalarStt           __compare 14.3527  __prcsnRate 100
++1 calculateLineString __set "norm(krry([[oc.Pl(1,2,3),oc.Pl(0)],[oc.Pl(1),oc.Pl(1)]], ftype=oc.Pl))"
++0 scalarStt           __compare 4
++1 calculateLineString __set "norm(krry([[`P^3 + `P + `1,PB(0)],[`P,`P]], ftype=PB))"
++0 scalarStt           __compare  2.23606798
++1 calculateLineString __set "norm(krry([[z_^3 + z_ + 1,Z_(0)],[z_,z_]], ftype=Z_))"
++0 scalarStt           __compare  2.23606798
++1 calculateLineString __set "Z5=oc.Zp(5);norm(krry([[Z5(8),Z5(0)],[Z5(1),Z5(1)]], ftype=Z5))"
++0 scalarStt           __compare 3.31662479
+
+
+#============== test norm for iterator =========================
+# iterator for vector container
++1 calculateLineString __set "norm(iter([True,False]))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "norm(iter([3,0]))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(iter([long(3),long(0)]))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(iter([3.1, 0]))"
++0 scalarStt           __compare 3.1
++1 calculateLineString __set "norm(iter([1+2j,0]))"
++0 scalarStt           __compare 2.236068
++1 calculateLineString __set "norm(iter([`1,`0]))"
++0 scalarStt           __compare 1
++1 calculateLineString __set "O=oc.ClOctonion;norm(iter([O(1,2,3,4,5,6,7,8),O(0)]))"
++0 scalarStt           __compare 14.2829  __prcsnRate 100
++1 calculateLineString __set "norm(iter([oc.Pl(1,2,3),oc.Pl(0)]))"
++0 scalarStt           __compare 3.741657
++1 calculateLineString __set "norm(iter([`P^3 + `P + `1,PB(0)]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(iter([z_^3 + z_ + 1,Z_(0)]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "Z5=oc.Zp(5);norm(iter([Z5(8),Z5(0)]))"
++0 scalarStt           __compare 3
+
+# iterator for matrix container
++1 calculateLineString __set "norm(iter([[True,False],[False,True]]))"
++0 scalarStt           __compare 1.414214
++1 calculateLineString __set "norm(iter([[1,0],[1,1]]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(iter([[long(1),long(0)],[long(1),long(1)]]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(iter([[1.0, 0.0],[1.0, 1.0]]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "norm(iter([[1+1j,0j],[1, 1j]]))"
++0 scalarStt           __compare 2
++1 calculateLineString __set "norm(iter([[`1,`0],[`1,`1]]))"
++0 scalarStt           __compare 1.732051
++1 calculateLineString __set "O=oc.ClOctonion;norm(iter([[O(1,2,3,4,5,6,7,8),O(0)],[O(1),O(1)]]))"
++0 scalarStt           __compare 14.3527  __prcsnRate 100
++1 calculateLineString __set "norm(iter([[oc.Pl(1,2,3),oc.Pl(0)],[oc.Pl(1),oc.Pl(1)]]))"
++0 scalarStt           __compare 4
++1 calculateLineString __set "norm(iter([[`P^3 + `P + `1,PB(0)],[`P,`P]]))"
++0 scalarStt           __compare  2.23606798
++1 calculateLineString __set "norm(iter([[z_^3 + z_ + 1,Z_(0)],[z_,z_]]))"
++0 scalarStt           __compare  2.23606798
++1 calculateLineString __set "Z5=oc.Zp(5);norm(iter([[Z5(8),Z5(0)],[Z5(1),Z5(1)]]))"
++0 scalarStt           __compare 3.31662479
+# ******************* sfShot.jot..09.04.17 end ******************************
+
+
+
+
+# 09.04.14 user operator を括弧つきの引数について実行すると飛んでいた
++1 calculateLineString __set "~[1,2,3]~^krry(4,5,6)[0] == ~[0,0,0]"
++0 blStt               __compare True
+
++1 calculateLineString __set "~[1,2,3] ~^ krry(4,5,6)[0] == ~[0,0,0]"
++0 blStt               __compare True
+
++1 calculateLineString __set "(krry([[1,2],[3,4]]) ~^ krry([[0,1],[1,1]]))[0,0] == -1"
++0 blStt               __compare True
+
++1 calculateLineString __set "(krry([[1,2],[3,4]]) ~^ krry([[0,1],[1,1]]))[0,0] == -1"
++0 blStt               __compare True
+
++1 calculateLineString __set "`σx[0,0] ~^ `σy[0,1]"
++0 scalarStt              __compare 0
+
+
+# 09.04.13 kzrs(... ftype=..) を実装していなかった
++1 calculateLineString __set "import octn as oc;O = oc.ClOctonion;mt=kzrs(2,2,ftype=O);type(mt[0,0])==O"
++0 blStt               __compare True
+
+# 09.04.13 ClTensor で m_dtrm 行列式が無限ループになっていた
++1 calculateLineString __set "mt=~[[`i,1+2`i],[2+3`i,9]]; mt.m_dtrm"
++0 scalarStt           __compare 4+2j
+
+
+# sfShot.jot.09.04.05a ClTensor/ClFldTns の __eq__ 動作
+# sfShot.jot::..... 長さが 1 のベクトルについても [True or False] の bool 値要素を持つ長さ 1 の ClTensor ベクトルを返す 
+#12.12.13 ClTensor.__equ__ 追加のため、下を使わなくなったので修正、コメント・アウトする
++1 calculateLineString __set "~[1,2,3] == ~[1,2,3]"
++0 blStt               __compare True
++1 calculateLineString __set "~[1,2,3] == [1,2,4]"
++0 blStt               __compare False
++1 calculateLineString __set "~[1,2,3] == 1"
++0 blStt               __compare False
++1 calculateLineString __set "~[1] == 1"
++0 blStt               __compare False
+
+#+1 calculateLineString __set "len(~[1,2,3] == [1,2,3]) == 3"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "(~[1,2,3] == [1,2,3])[0] == True"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "(~[1,2,3] == [1,9,3])[1] == False"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "(~[1,2,3] == [1,9,3])[2]"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "aTrue(~[1,2,3] == [1,2,3])"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "aTrue(~[1,2,3] == [1,9,3]) == False"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "aTrue(~[1,2,3] == [1,2.0,3])"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "aTrue(~[1,2,3] == [1,2.0+0j,3])"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "aTrue(~[1,2+1j,3] == [1,2+1j,3])"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "aTrue(~[1,2, complex] == [1,2])"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "len(~[1, complex] == [1])==1"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "(~[1, complex] == [1])[0]"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "len(~[1, object] == 1) == 1"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "(~[1, object] == 1)[0]"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "type(~[`1]==1) == ClTensor"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "len(~[`1] == `1)==1"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "(~[`1] == `1)[0]"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "len(~[`1] == 1)==1"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "(~[`1] == 1)[0]"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "(~[`0] == 1)[0] == False"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "type((~[`1] == `1)[0]) == sc.bool_"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "(~[`1] == `1).dtype == bool"
+#+0 blStt               __compare True
+
+# 09.04.04 [1,1]`σx が ndarray を返すようになっていた
++1 calculateLineString __set "isinstance([1,1] `σx, ClTensor)"
++0 blStt               __compare True
+# 下で飛んでいた
++1 calculateLineString __set "isinstance([1,1]`σx, ClTensor)"
++0 blStt               __compare True
++1 calculateLineString __set "~[1,1]3 == ~[3,3]"
++0 blStt               __compare True
++1 calculateLineString __set "a=3; ~[1,1]a == ~[3,3]"
++0 blStt               __compare True
+
+# 09.04.04 krry({(0,0):1,(0,1):0,(1,0):0,(1,1):1}, dtype=int) のテストをしていなかった。未参照クラスを使っていた
++1 calculateLineString __set "mt=krry({(0,0):1,(0,1):0,(1,0):0,(1,1):1}, dtype=int);mt[1,1] == 1"
++0 blStt               __compare True
++1 calculateLineString __set "mt=krry({(0,0):1,(0,1):0,(1,0):0,(1,1):1}, dtype=int);type(mt[1,1]) == sc.int64"
++0 blStt               __compare True
++1 calculateLineString __set "mt=krry({(0,0):1,(0,1):0,(1,0):0,(1,1):1}, dtype=object);type(mt[1,1]) == int"
++0 blStt               __compare True
+
+# sfShot.jot.09.04.04
++1 calculateLineString __set "mt=krry({(0,0):1,(0,1):0,(1,0):0,(1,1):1}, ftype=object);isinstance(mt, ClFldTns) and type(mt[1,1]) == int"
++0 blStt               __compare True
+
+
++1 calculateLineString __set "mt=krry({(0,0):1,(0,1):0,(1,0):0,(1,1):1}, int);isinstance(mt, ClTensor) and type(mt[1,1]) == sc.int64"
++0 blStt               __compare True
+
+
+# sfShot.jot.09.03.26 八元数の __iter__ を定義していなかった。
+# その結果 norm(..) を計算できなかった
++1 calculateLineString __set "O=oc.ClOctonion;a=O(0,1,0,0, 1,0,1,1); norm(a)==2"
++0 blStt               __compare True
+
++1 calculateLineString __set "O=oc.ClOctonion;a=O(0,1,0,0, 1,0,1,1); normSq(a)==4"
++0 blStt               __compare True
+
+# 09.03.29 複素行列から複素行列を作れなかった。実数行列になっていた
++1 calculateLineString __set "ClTensor(~[1+2j,3+4j])"
++0 krryStt             __compare [ 1.+2.j,  3.+4.j]
+
+# sfShot.jot.09.03.26 ClTensor/ClFltTns の 0 べき乗
+#`σx^0 が全部の要素が 1 の行列になっていた
++1 calculateLineString __set "mt=`σx^2;type(mt[0,0])==sc.float64 and mt.r == ~[1,0,0,1]"
++0 blStt               __compare True
+
++1 calculateLineString __set "mt=`σy^2;type(mt[0,0])==sc.complex128 and mt.r == ~[1,0,0,1]"
++0 blStt               __compare True
+
+# for python24 +1 calculateLineString __set "mt=~[[`0,`1],[`1,`0], object]^2;mt.dtype==object and  type(mt[0,0])==oc.BF and sc.alltrue(mt.r ==[1,0,0,1])"
+#+1 calculateLineString __set "mt=~[[`0,`1],[`1,`0], object]^2;mt.dtype==sc.dtype('|O4') and  type(mt[0,0])==oc.BF and sc.alltrue(mt.r ==[1,0,0,1])"
++1 calculateLineString __set "mt=~[[ 0, 1],[ 1, 0], object]^2;mt.dtype==object and  type(mt[0,0])==int and mt.r == ~[1,0,0,1]"
++0 blStt               __compare True
+
++1 calculateLineString __set "mt=~[[0,1],[1,0], oc.BF]^2;type(mt[0,0])==oc.BF and  mt.r == ~[1,0,0,1]"
++0 blStt               __compare True
+
+# 09.03.25 ClTensor/ClFldTns 加減算を 0, tuple,list とも演算可能にする
+#12.12.13 ClTensor.__equ__ 追加のため、下を使わなくなったのでコメント・アウトする
++1 calculateLineString __set "mt=~[1,2,3] + [4,5,6]; mt == ~[5,7,9]"
++0 blStt               __compare True
+#+1 calculateLineString __set "mt=~[1,2,3] + [4,5,6];sc.alltrue(mt == [5,7,9])"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "mt=~[1,2,3] - [4,5,6];sc.alltrue(mt == [-3,-3,-3])"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "mt=~[1,2,3] + 0;sc.alltrue(mt == [1,2,3])"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "mt=~[1,2,3] - 0;sc.alltrue(mt == [1,2,3,])"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "aTrue(~[[1,2,3],[4,5,6]] + [[10,20,30],[40,50,60]] == [[11,22,33],[44,55,66]])"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "aTrue(~[[1,2,3],[4,5,6]] + 0 == [[1,2,3],[4,5,6]])"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "mt=~[`1,`0,`1] + [`1,`1,`1];sc.alltrue(mt == [`0,`1,`0])"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "mt=~[`1,`0,`1] - [`1,`1,`1];sc.alltrue(mt == [`0,`1,`0])"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "mt=~[`1,`0,`1] + 0;sc.alltrue(mt == [`1,`0,`1])"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "mt=~[`1,`0,`1] - 0;sc.alltrue(mt == [`1,`0,`1])"
+#+0 blStt               __compare True
+#
+#+1 calculateLineString __set "aTrue(~[[`1,`0,`1],[`0,`1,`1]]+ [[`1,`1,`1],[`1,`1,`1]] == [[`0,`1,`0],[`1,`0,`0]])"
+#+0 blStt               __compare True
+#+1 calculateLineString __set "aTrue(~[[`1,`0,`1],[`0,`1,`1]]+ 0 == [[`1,`0,`1],[`0,`1,`1]])"
+#+0 blStt               __compare True
+
+# 09.03.24 多項式要素の ClFldTns を作るとエラーになっていた
++1 calculateLineString __set "mt=krry([`P^2,`P+1],PB);mt[0] == `P^2"
++0 blStt               __compare True
+
++1 calculateLineString __set "mt=~[[`P^2,`P+1],PB];mt[0] == `P^2"
++0 blStt               __compare True
+
+# 09.03.23 ClTensor object の和演算をさせるとでエラーになっていた
++1 calculateLineString __set "~[`1,`0] + ~[`1,`1] == ~[`0,`1]"
++0 blStt               __compare True
+
++1 calculateLineString __set "~[`1,`0] - ~[`1,`1] == ~[`0,`1]"
++0 blStt               __compare True
+
+# 09.03.23 krry(... None) でエラーになっていた。default float にする    
+# 09.03.31 krry([1,2,3,4], None) は AppError にするように変更した
+#          dtype = None のみにする。これも隠し仕様とする
+#         <== krry([[1,2,3,4], None],dtype=object) と区別ができないためです
++1 calculateLineString __set "clAt=krry([1,2,3,4], None);(type(clAt)==ClTensor) and type(clAt[0])==sc.float64 and clAt[0]==1"
+#+0 blStt               __compare True
++0 strPythonAppErrorStt __compare "You use None in sf.krry(..) paramere:([1, 2, 3, 4], None)"
+
++1 calculateLineString __set "clAt=krry([[1,2],[3,4]], None);(type(clAt)==ClTensor) and type(clAt[0,0])==sc.float64 and clAt[0,0]==1"
+#+0 blStt               __compare True
++0 strPythonAppErrorStt __compare "You use None in sf.krry(..) paramere:([[1, 2], [3, 4]], None)"
+
++1 calculateLineString __set "clAt=krry([1,2,3+4j,4], None);(type(clAt)==ClTensor) and type(clAt[0])==sc.complex128 and clAt[0]==1"
+#+0 blStt               __compare True
++0 strPythonAppErrorStt __compare "You use None in sf.krry(..) paramere:([1, 2, (3+4j), 4], None)"
+
+
++1 calculateLineString __set "clAt=krry([1,2,3,4, None]);(type(clAt)==ClTensor) and type(clAt[0])==sc.float64 and clAt[0]==1"
+#+0 blStt               __compare True
++0 strPythonAppErrorStt __compare "You use None in sf.krry(..) paramere:[1, 2, 3, 4, None]"
+
++1 calculateLineString __set "clAt=krry([[1,2],[3,4], None]);(type(clAt)==ClTensor) and type(clAt[0,0])==sc.float64 and clAt[0,0]==1"
+#+0 blStt               __compare True
++0 strPythonAppErrorStt __compare "You use None in sf.krry(..) paramere:[[1, 2], [3, 4], None]"
+
++1 calculateLineString __set "clAt=krry([1,2,3+4j,4, None]);(type(clAt)==ClTensor) and type(clAt[0])==sc.complex128 and clAt[0]==1"
+#+0 blStt               __compare True
++0 strPythonAppErrorStt __compare "You use None in sf.krry(..) paramere:[1, 2, (3+4j), 4, None]"
+
++1 calculateLineString __set "clAt=~[1,2,3,4, None];(type(clAt)==ClTensor) and type(clAt[0])==sc.float64 and clAt[0]==1"
+#+0 blStt               __compare True
++0 strPythonAppErrorStt __compare "You use None in sf.krry(..) paramere:(1, 2, 3, 4, None)"
+
++1 calculateLineString __set "clAt=~[[1,2],[3,4], None];(type(clAt)==ClTensor) and type(clAt[0,0])==sc.float64 and clAt[0,0]==1"
+#+0 blStt               __compare True
++0 strPythonAppErrorStt __compare "You use None in sf.krry(..) paramere:([1, 2], [3, 4], None)"
+
++1 calculateLineString __set "clAt=~[1,2,3+4j,4, None];(type(clAt)==ClTensor) and type(clAt[0])==sc.complex128 and clAt[0]==1"
+#+0 blStt               __compare True
++0 strPythonAppErrorStt __compare "You use None in sf.krry(..) paramere:(1, 2, (3+4j), 4, None)"
+
+
+# 09.03.21 ClFldTns で int, float との 演算を行わせると ClTensor になっていた
++1 calculateLineString __set "clAt=ClFldTns([1,2,3,4], int);clAt = clAt + ClFldTns([10,2,3,4], int); isinstance(clAt, ClFldTns) and clAt == krry([11,4,6,8], ftype=int)"
++0 blStt               __compare True
+
++1 calculateLineString __set "clAt=ClFldTns([1,2,3,4], int);clAt=clAt - ClFldTns([10,2,3,4], int);isinstance(clAt, ClFldTns) and clAt ==krry([-9,0,0,0], ftype=int)"
++0 blStt               __compare True
+
++1 calculateLineString __set "clAt=ClFldTns([1,2,3,4], int);clAt= clAt 2;isinstance(clAt, ClFldTns) and clAt ==krry([2,4,6,8],ftype=int)"
++0 blStt               __compare True
+
++1 calculateLineString __set "clAt=ClFldTns([1,2,3,4], int);clAt= clAt/1;isinstance(clAt, ClFldTns) and clAt == krry([1,2,3,4], ftype=int)"
++0 blStt               __compare True
+
+# 09.03.18 ClFldTns で __sub__ を定義していなかった
++1 calculateLineString __set "~[1,1,0,1, oc.BF]-~[1,1,0,0, oc.BF] == ~[0,0,0,1, oc.BF]"
++0 blStt               __compare True
+
+# 09.03.16 kzrs( [3,4] ) がエラーになっていた
++1 calculateLineString __set "mt=kzrs([3,4]);mt[2,3]==0"
++0 blStt               __compare True
+
+
+# 09.03.15 ClFldTns の __repr__ 文字列を align させた
+#[~[`σx, oc.BF]]
+#===============================
+#[ClFldTns([[0, 1],
+#           [1, 0]], octn.BF)]
+
++1 calculateLineString __set "repr([~[`σx, oc.BF]]).split('\n')[1]"
++0 strStt              __compare "           [BF(1), BF(0)]], pysf.octn.BF)]"
+
+# 09.03.14 kvct(1,1,0,1, oc.BF), kvct([1,1,0,1], oc.BF) が ClTensor を返していた。
+# ClFldTns を返すように修正する
++1 calculateLineString __set "vct=krry(1,1,0,1, oc.BF); type(vct) == ClFldTns"
++0 blStt               __compare True
++1 calculateLineString __set "vct=krry(1,`1,0,1, oc.BF); vct[1] is `1"
++0 blStt               __compare True
++1 calculateLineString __set "vct=krry([1,1,0,1], oc.BF); type(vct) == ClFldTns"
++0 blStt               __compare True
++1 calculateLineString __set "vct=krry([1,`1,0,1], oc.BF); type(vct) == ClFldTns"
++0 blStt               __compare True
+
++1 calculateLineString __set "krry(1, 2, 3, oc.RS) krry(4, 5, 6, oc.RS) == oc.RS(0x04)"
++0 blStt               __compare True
+
+# 09.03.12 ClFldTns どうしの和が assert error になっていた
++1 calculateLineString __set "mt=~[[0,1],[1,0], oc.BF];(mt+mt).r[1] == 0"
++0 blStt               __compare True
+
+# 09.03.11 ClFldTns.r が誤動作していた
++1 calculateLineString __set "N=4;mt=kzrs(N,N, oc.BF);mt.r[slice(1,N^2,N+1)]=[`1]*(N-1);mt[0,1] == `1"
++0 blStt               __compare True
+
+#+1 calculateLineString __set "mt=`σx; 1/mt;mt[0,0]=1;(1/mt)[1,1]==-1" #`σx が変わってしまう
++1 calculateLineString __set "mt=~[[0,1],[1,0]]; 1/mt;mt[0,0]=1;(1/mt)[1,1]==-1"
++0 blStt               __compare True
+
+# ClFldTns の逆行列演算で、下の行列が determinant == 0 になっていた
++1 calculateLineString __set "mt=~[[1,1],[1,0], oc.BF];(1/mt)[1,1]==1"
++0 blStt               __compare True
+
+# 09.03.07
++1 calculateLineString __set "mt=krry([1., 2.], oc.BF);mt[0] == `1"
++0 blStt               __compare True
++1 calculateLineString __set "mt=krry([1., 2.], oc.BF);mt[1] == `0"
++0 blStt               __compare True
++1 calculateLineString __set "mt=~[1., 2., oc.BF];mt[0] == `1"
++0 blStt               __compare True
++1 calculateLineString __set "mt=krry(`σx, oc.BF);mt[0,0] == `0"
++0 blStt               __compare True
++1 calculateLineString __set "mt=krry(`σx, oc.BF);mt[0,1] == `1"
++0 blStt               __compare True
++1 calculateLineString __set "mt=~[`σx, oc.BF];mt[0,0] == `0"
++0 blStt               __compare True
++1 calculateLineString __set "mt=~[`σx, oc.BF];mt[0,1] == `1"
++0 blStt               __compare True
+
+# 09.02.13 test ClFltTns determinant
+#deerminant of [[0 0 1]  bool field
+#               [1 0 0]
+#               [0 1 0]]
++1 calculateLineString __set "mt=kzrs(3,3, oc.BF);mt[0,2] = oc.BF(1);mt[1,0] = oc.BF(1);mt[2,1] = oc.BF(1); mt.m_dtrm.m_val"
++0 inStt               __compare 1
+
+#deerminant of [[0 1 0]  bool field  == 1
+#               [1 0 0]
+#               [0 0 1]]
++1 calculateLineString __set "mt=kzrs(3,3, oc.BF);mt[0,1] = oc.BF(1);mt[1,0] = oc.BF(1);mt[2,2] = oc.BF(1); mt.m_dtrm.m_val"
++0 inStt               __compare 1
+
+#  inverse  of [[0 1 0]  bool field  == 1
+#               [1 0 0]
+#               [0 0 1]]
++1 calculateLineString __set "mt=kzrs(3,3, oc.BF);mt[0,1] = oc.BF(1);mt[1,0] = oc.BF(1);mt[2,2] = oc.BF(1); mt.m_inv[0,:] == ~[0,1,0, oc.BF]"
++0 blStt               __compare True
+
++1 calculateLineString __set "mt=kzrs(3,3, oc.BF);mt[0,1] = oc.BF(1);mt[1,0] = oc.BF(1);mt[2,2] = oc.BF(1); mt.m_inv[1,:] == ~[1,0,0, oc.BF]"
++0 blStt               __compare True
+
++1 calculateLineString __set "mt=kzrs(3,3, oc.BF);mt[0,1] = oc.BF(1);mt[1,0] = oc.BF(1);mt[2,2] = oc.BF(1); mt.inv()[2,:] == ~[0,0,1, oc.BF]"
++0 blStt               __compare True
+
+# 09.02.08 test ClFltTns multiply
+#[[0 0 1]  * [1,1,1] 
+# [1 0 0]
+# [0 1 0]]
+
++1 calculateLineString __set "mt=kzrs(3,3, oc.BF);mt[0,2] = oc.BF(1);mt[1,0] = oc.BF(1);mt[2,1] = oc.BF(1); ~[x.m_val for x in mt [1,1,1]]"
++0 krryStt         __compare [1,1,1]
+
++1 calculateLineString __set "mt=kzrs(3,3, oc.BF);mt[0,2] = oc.BF(1);mt[1,0] = oc.BF(1);mt[2,1] = oc.BF(1); ~[x.m_val for x in mt ~[1,1,1, oc.BF]]"
++0 krryStt         __compare [1,1,1]
+
++1 calculateLineString __set "mt=~[[0,1],[1,0], oc.BF] ~[[0,1],[1,0], oc.BF];~[ x.m_val for x in mt[0,:]]"
++0 krryStt         __compare [1,0]
+
+# 08.12.02 __rdiv__ で左値を掛けていなかった
++1 calculateLineString __set "(2/`σx)"
+#+0 krryStt         __compare "[[0, 2],[2, 0]]"
++0 krryStt         __compare [[0, 2],[2, 0]]
+
+# 08.12.02 オブジェクトの負のべき乗がエラーになっていた
+# 09.01.04 対策が必要 逆行列が浮動小数点の行列になっている
+#  File "C:\my\vc7\mtCm\sf.py", line 5097, in __new__
+#    arAt = sc.array(data, dtype=dtype, copy=copy)
+#TypeError: array cannot be safely cast to required type
+#//@@
+#import scipy as sc
+#import scipy.linalg as sl
+#
+#mt=sc.array([[0,1],[1,0]])
+#print mt
+#print sl.inv(mt)
+#//@@@
+#[[0 1]
+# [1 0]]
+#[[ 0.  1.]
+# [ 1.  0.]]
+#<==逆行列は、scipy でも無条件で浮動小数点に変更してしまう
+#+1 calculateLineString __set "S=oc.Sn(5);S(1,0,2,4,3)^-2 == S(0,1,2,3,4)"
+#+0 blStt               __compare True
+
+# 09.02.07 ClFldTns:field tensor class を導入する
++1 calculateLineString __set "mt=krry(0,1,1, 0, oc.BF);mt.m_type == oc.BF"
++0 blStt               __compare True
+
+# 09.02.06
++1 calculateLineString __set "mt=~[[0,1],[1, 0], oc.BF];mt.m_type == oc.BF"
++0 blStt               __compare True
+
++1 calculateLineString __set "mt=1/~[[0,1],[1, 0], oc.BF]; mt[0,:] == ~[0,1, oc.BF]"
++0 blStt               __compare True
+
++1 calculateLineString __set "mt=~[[0,1],[1, 0], oc.BF];type(mt[0,0]) == oc.BF"
++0 blStt               __compare True
+
+# 08.11.25 long 要素のリストから行列・ベクトルを作ったとき float になっていなかった
++1 calculateLineString __set "test=krry(2^31, 2^31);isinstance(test[0],float)"
++0 blStt               __compare True
+
++1 calculateLineString __set "test=krry([2^31, 2^31]);isinstance(test[0],float)"
++0 blStt               __compare True
+
++1 calculateLineString __set "test=krry([2^31, 2^31]);isinstance(test[0],float)"
++0 blStt               __compare True
+
+# 08.11.19 kryy(arrayInAg, dtype = oc.Oc) としたとき arrayInAg の型のまま oc.Oc キャスト値を
+# 設定するコードのため飛んでいた。
++1 calculateLineString __set "ar = arange(4).reshape(2,2);mt = krry(ar, ftype=oc.Oc);isinstance(mt[0,0], oc.Oc)"
++0 blStt               __compare True
+
+# 08.11.19 ClTensor.__getitem__(..) で要素取り出しも m_type を設定するようにした。
+# <== やってみると、(`σx-`σy)[0,0] など m_type がないものでエラーになるので止めた
+# #return ClTensor(super(ClTensor, self).__getitem__(ag), self.m_type)
+#+1 calculateLineString __set "lst=[1,2,3];(krry([lst])[0]).m_type == float"
+#+0 blStt               __compare True
+
+# 08.11.13 sf.fft/sf.ifft が ClTensor を返すように変更した。それまで scipy.array を返したいた。
++1 calculateLineString __set "test=fft([1,2,3,4]);isinstance(test, ClTensor)"
++0 blStt               __compare True
++1 calculateLineString __set "test=ifft([1,2,3,4]);isinstance(test, ClTensor)"
++0 blStt               __compare True
+
+#08.11.12 サイズが大きな行列のファイル変数で途中省略されていた。読み戻しで飛んでいた
+# 最後を 「test[10,10] == 0」で比較すると boolscalar に変わってしまう。bool では
+# なくなってしまうので、 blStt は None になってしまう
++1 calculateLineString __set "N=128;test:=kzrs(N,N);=:test; float(test[10,10]) == 0"
++0 blStt               __compare True
+
+#+1 calculateLineString __set "test:= ~[oc.BF(1), oc.BF(0)];=:test;test.m_type == oc.BF"
+#<== 09.02.18 ClFldTns は型指定引数を必ず入れる
++1 calculateLineString __set "test:= ~[oc.BF(1), oc.BF(0), oc.BF];=:test;test.m_type == oc.BF"
++0 blStt               __compare True
+
++1 calculateLineString __set "test=krry([[1,2],[3,4], complex]); test[0,:]==~[1,2]"
++0 blStt               __compare True
++1 calculateLineString __set "test=~[[1,2],[3,4], complex]; test[0,:]==~[1,2]"
++0 blStt               __compare True
+
+#~[[1,2],[3,4], dtype=complex] , krry([[1,2],[3,4], dtype=complex]) この二つの書き方は使わない
+# 後ろ側が python 文法でのエラーになるからです
+
++1 calculateLineString __set "test=krry([[1,2],[3,4]], dtype=complex); test[0,:]==~[1,2]"
++0 blStt               __compare True
+
++1 calculateLineString __set "test=krry(oc.BF(1), oc.BF(0));test[0]==1"
++0 blStt               __compare True
+
+#+1 calculateLineString __set "test:=kzrs(4,4, int);=:test;test.m_type == int"
+#+0 blStt               __compare True
+
++1 calculateLineString __set "test:= ~[oc.BF(1), oc.BF(0)];=:test;isinstance(test[1],oc.BF)"
++0 blStt               __compare True
+
+# 08.11.08 ((object matrix)^0)[k,k] is object(1)
++1 calculateLineString __set "mt=kzrs(3,3, oc.BF);mt=mt^0;isinstance(mt[1,1], oc.BF)"
++0 blStt               __compare True
+
+# 08.11.07
++1 calculateLineString __set "3 + krry([1,2,3,4])"
++0 krryStt         __compare [4,5,6,7]
+
+#+1 calculateLineString __set "krry([1,2,3,4])+ 3"
+#+0 krryStt         __compare [4,5,6,7]
+
++1 calculateLineString __set "v=krry([0]*3+[1],oc.BF);isinstance(v[0], oc.BF)"
++0 blStt               __compare True
+
+# 08.11.06
++1 calculateLineString __set "import octn as oc;v=kzrs(3,oc.BF);isinstance(v[0], oc.BF)"
++0 blStt               __compare True
+
+# 08.11.05
++1 calculateLineString __set "plAt=poly1d([1,2]);~[plAt.coeffs]"
+#+0 krryStt         __compare "[[1,  2]]"
++0 krryStt         __compare [[1,  2]]
+
+# 08.11.04
++1 calculateLineString __set "import octn as oc;mt=~[[1,2],[3,5],oc.RS];isinstance(mt[0,0],oc.RS)"
++0 blStt               __compare True
+
++1 calculateLineString __set "import octn as oc;mt=krry([[1,2],[3,5],oc.RS]);isinstance(mt[0,0],oc.RS)"
++0 blStt               __compare True
+
++1 calculateLineString __set "import octn as oc;vct=~[1,2,oc.RS];isinstance(vct[0],oc.RS)"
++0 blStt               __compare True
+
+
++1 calculateLineString __set "mt=~[1,0, bool];isinstance(mt[0], sc.bool_)"
++0 blStt               __compare True
+
++1 calculateLineString __set "mt=krry([1,0], bool);isinstance(mt[0], sc.bool_)"
++0 blStt               __compare True
+
+# 08.11.04 下で 「elmAt = sqAg[0] TypeError: unsubscriptable object」になった
++1 calculateLineString __set "krry( (3,) )"
++0 krryStt             __compare [3.]
+
++1 calculateLineString __set "import octn as oc;krry(1, 2, 3, oc.RS) krry(4, 5, 6, oc.RS)"
++0 checkVal           __set "0x04"
+
++1 calculateLineString __set "import octn as oc;vct=krry(1, 2, 3, oc.RS);isinstance(vct[0], oc.RS)"
++0 blStt               __compare True
+
++1 calculateLineString __set "vct=kzrs(3, bool);isinstance(vct[0], sc.bool_)"
++0 blStt               __compare True
+
++1 calculateLineString __set "test := kzrs(3,3,3, bool);=:test ;isinstance(test[0,0,0], sc.bool_)"
++0 blStt               __compare True
+
+#08.11.03 下で 「strRtn += "%17.17g"%self[indexUpperAt].real
+#            TypeError: float argument required」 エラーになっていた
+#+1 calculateLineString __set "test:=kzrs(2,2,2, complex); := test;test[0,1,0]"
+# 09.01.08 たぶん :=test のテストだったと思われる。:= を後ろと前に入れ替えているうちに誤ったと推測している
++1 calculateLineString __set "test:=kzrs(2,2,2, complex); =: test;test[0,1,0]"
++0 scalarStt               __compare 0
+
+#08.11.03 下で 「unsubscriptable object at excecuting:test[1]」エラーになっていた
++1 calculateLineString __set "test:=krry(1,2,3);test[1]"
++0 scalarStt               __compare 2
+
++1 calculateLineString __set "vct=kzrs(3, int);isinstance(vct[0],int)"
++0 blStt               __compare True
+
+#×+1 calculateLineString __set "vct=kzrs(3, bool);isinstance(vct[0],bool)"
+#+1 calculateLineString __set "vct=kzrs(3, bool);isinstance(vct[0],boolscalar)"
+# boolscalar に変わっているのは納得できるが、boolscalar 型を持ってこれない。
+#+0 blStt               __compare True
+
+#+1 calculateLineString __set "vct=~[3, 1, int] の記述は取らない。行列で ambiguity が出るから。
++1 calculateLineString __set "vct=krry(3, 1, int);isinstance(vct[0],int)"
++0 blStt               __compare True
+
++1 calculateLineString __set "krry(1,2,3,dtype=float) == ~[1,2,3]"
++0 blStt               __compare True
+
++1 calculateLineString __set "krry(1,2,3,dtype=complex) == ~[1,2,3]"
++0 blStt               __compare True
+
++1 calculateLineString __set "krry(1,2,3,dtype=int) == ~[1,2,3]"
++0 blStt               __compare True
+
+
++1 calculateLineString __set "lst=[1,2,3]; krry(lst, float) == ~[1,2,3]"
++0 blStt               __compare True
+
++1 calculateLineString __set "lst=[1,2,3]; krry(lst,complex) == ~[1,2,3]"
++0 blStt               __compare True
+
++1 calculateLineString __set "lst=[1,2,3]; krry(lst,int) == ~[1,2,3]"
++0 blStt               __compare True
+
+
++1 calculateLineString __set "krry(1,2,3,float) == ~[1,2,3]"
++0 blStt               __compare True
+
++1 calculateLineString __set "krry(1,2,3,complex) == ~[1,2,3]"
++0 blStt               __compare True
+
++1 calculateLineString __set "krry(1,2,3,int) == ~[1,2,3]"
++0 blStt               __compare True
+#08.10.28 上の実装は後回し
+
++1 calculateLineString __set "kzrs(3,dtype=float) == ~[0,0,0]"
++0 blStt               __compare True
++1 calculateLineString __set "kzrs([2,3],dtype=complex) == ~[[0,0,0],[0,0,0]]"
++0 blStt               __compare True
+
++1 calculateLineString __set "kzrs(3,dtype=int) == ~[0,0,0]"
++0 blStt               __compare True
+
+
++1 calculateLineString __set "lst=[2,3]; kzrs(lst, float) == ~[[0,0,0],[0,0,0]]"
++0 blStt               __compare True
++1 calculateLineString __set "lst=[2,3];kzrs(lst,complex) == ~[[0,0,0],[0,0,0]]"
++0 blStt               __compare True
++1 calculateLineString __set "lst=[2,3]; kzrs(lst,int) == ~[[0,0,0],[0,0,0]]"
++0 blStt               __compare True
+
+
++1 calculateLineString __set "kzrs(3,float) == ~[0,0,0]"
++0 blStt               __compare True
++1 calculateLineString __set "kzrs(2,3,float) == ~[[0,0,0],[0,0,0]]"
++0 blStt               __compare True
++1 calculateLineString __set "kzrs([2,3],float) == ~[[0,0,0],[0,0,0]]"
++0 blStt               __compare True
+
++1 calculateLineString __set "kzrs(3,complex) == ~[0,0,0]"
++0 blStt               __compare True
++1 calculateLineString __set "kzrs(2,3,complex) == ~[[0,0,0],[0,0,0]]"
++0 blStt               __compare True
++1 calculateLineString __set "kzrs([2,3],complex) == ~[[0,0,0],[0,0,0]]"
++0 blStt               __compare True
+
+
++1 calculateLineString __set "kzrs(3,int) == ~[0,0,0]""
++0 blStt               __compare True
++1 calculateLineString __set "kzrs(2,3,int) == ~[[0,0,0],[0,0,0]]"
++0 blStt               __compare True
++1 calculateLineString __set "kzrs([2,3],int) == ~[[0,0,0],[0,0,0]]"
++0 blStt               __compare True
+
+
+
+#08.10.28 #krry([1,2,3],int)
+#a float is required at excecuting:krry([1,2,3],int)
++1 calculateLineString __set "krry([1,2,3],int)"
++0 krryStt         __compare [1,2,3]
+
++1 calculateLineString __set "kzrs([2,3],int) == ~[[0,0,0],[0,0,0]]"
++0 blStt               __compare True
+
++1 calculateLineString __set "kzrs(3,complex) == ~[0,0,0]"
++0 blStt               __compare True
+
+#+1 calculateLineString __set "krry(0+0j,0,0) == [0,0,0]" こっちは krry で書く
++1 calculateLineString __set "krry([0+0j,0,0]) == ~[0,0,0]"
++0 blStt               __compare True
+
+#+1 calculateLineString __set "krry(0,0,0) == [0,0,0]"  こっちは krry で書く
++1 calculateLineString __set "krry([0,0,0]) == ~[0,0,0]"
++0 blStt               __compare True
+
++1 calculateLineString __set "krry([0, 0.5, 0], int) == ~[0,0,0]"
++0 blStt               __compare True
+
++1 calculateLineString __set "krry([[1,0],[0,1]], bool) krry(1,0, bool)"
++0 krryStt             __compare [True, False]
+
+#08.10.28 kzrs(3) == [0,0,0] が False になっていた
++1 calculateLineString __set "kzrs(3) == ~[0,0,0]"
++0 blStt               __compare True
+
++1 calculateLineString __set "dct={};for idx, (x,y) in enmasq((1,3,0.1),(2,4,1.2)):dct[idx]= x+y `i;krry(dct)[1,:]"
++0 krryStt         __compare [ 1.1+2.j,   1.1+3.2j,  1.1+4.4j,  1.1+5.6j]
+
+# =======================================================
+# ~[...] operations
+# ~[range(3)] == [[0,1,2]] and not [0,1,2] because [range(3)] is [[0,1,2]]
++1 calculateLineString __set "~[range(3)]"
++0 krryStt             __compare [[0,1,2]]
+
+# others
++1 calculateLineString __set "norm(1,1,1,1)"
++0 scalarStt               __compare 2
++1 calculateLineString __set "norm([1,1,1,1])"
++0 scalarStt               __compare 2
+
+
+
+# ---- ts_() を実行した後の計算結果 -------
++1 calculateLineString __set "ts_();str(sc.array([1, 2]) s`)"
++0 strStt              __compare "[s` 2*s`]"
+
++1 calculateLineString __set "ts_();str(s` sc.array([1, 2]))"
++0 strStt              __compare "[s` 2*s`]"
+
++1 calculateLineString __set "ts_();str(~[1, 2] s`)[:15]"
++0 strStt              __compare "[1.0*s` 2.0*s`]"
+                   
++1 calculateLineString __set "ts_();str(s` ~[1, 2])[:15]"
++0 strStt              __compare "[1.0*s` 2.0*s`]"
+
++1 calculateLineString __set "ts_();Float(1m`/m`)"
++0 scalarStt           __compare 1
+
+
+
++1 calculateLineString __set "norm(`Rat(3))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm([`Rat(3),`Rat(0)])"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm([`Rat(3)])"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm( (`Rat(3),`Rat(0)) )"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm( {1:`Rat(3),2:`Rat(0)} )"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(sc.array([`Rat(3),`Rat(0)]))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(sc.array(`Rat(3)))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(sc.array([[`Rat(3),`Rat(0)],[`Rat(1),`Rat(1)]]))"
++0 scalarStt           __compare 3.31662479
++1 calculateLineString __set "norm(ClTensor([`Rat(3),`Rat(0)],dtype=object))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(ClTensor(`Rat(3), dtype=object))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(ClTensor([[`Rat(3),`Rat(0)],[`Rat(1),`Rat(1)]], dtype=object))"
++0 scalarStt           __compare 3.31662479
++1 calculateLineString __set "norm(ClFldTns([`Rat(3),`Rat(0)],ftype=`Rat))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(ClFldTns(`Rat(3), ftype=`Rat))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(ClFldTns([[`Rat(3),`Rat(0)],[`Rat(1),`Rat(1)]], ftype=`Rat))"
++0 scalarStt           __compare 3.31662479
++1 calculateLineString __set "norm(krry([`Rat(3),`Rat(0)],dtype=object))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(krry(`Rat(3), dtype=object))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(krry([[`Rat(3),`Rat(0)],[`Rat(1),`Rat(1)]], dtype=object))"
++0 scalarStt           __compare 3.31662479
++1 calculateLineString __set "norm(krry([`Rat(3),`Rat(0)],ftype=`Rat))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(krry(`Rat(3), ftype=`Rat))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(krry([[`Rat(3),`Rat(0)],[`Rat(1),`Rat(1)]], ftype=`Rat))"
++0 scalarStt           __compare 3.31662479
++1 calculateLineString __set "norm(iter([`Rat(3),`Rat(0)]))"
++0 scalarStt           __compare 3
++1 calculateLineString __set "norm(iter([[`Rat(3),`Rat(0)],[`Rat(1),`Rat(1)]]))"
++0 scalarStt           __compare 3.31662479
+
+# 09.11.16 tr() で sympy 単位を付けない数値のみの定数にするようにした
++1 calculateLineString __set "tr();str(sc.array([1, 2]) s`)[:9]"
++0 strStt              __compare "[1 2]"
+
++1 calculateLineString __set "tr();str(s` sc.array([1, 2])[:9])"
++0 strStt              __compare "[1 2]"
+
++1 calculateLineString __set "tr();str(~[1, 2] s`)[:9]"
++0 strStt              __compare "[ 1.  2.]"
+
++1 calculateLineString __set "tr();str(s` ~[1, 2])[:9]"
++0 strStt              __compare "[ 1.  2.]"
+
+
+# 2011.08.25 absF(..) 引数で sympy 単位付きの値を扱えるようにした
+# <== AssertionError: At Float(.)... になっていた
++1 calculateLineString __set "ts_();absF(-2m`) == 2m`"
++0 blStt               __compare True
+
+
+# customize.py に定義してある user operator を変更してしまうので、最後にする
+# 10.10.17 user operator よりマイナス演算子を優先されるようにした
+#   ~*=λ x,y:(x*y)%2; -1 ~* -1 == -1 は受け入れられません
++1 calculateLineString __set "~*=λ x,y:(x*y)%2; -1 ~* -1 == 1"
++0 blStt               __compare True
+
++1 calculateLineString __set "~*=λ x,y:(x*y)%2; -1L ~* -1L == 1"
++0 blStt               __compare True
+
++1 calculateLineString __set "~*=λ x,y:(x*y)%2; -1l ~* -1l == 1"
++0 blStt               __compare True
+
++1 calculateLineString __set "~*=λ x,y:(x*y)%2; -1.2 ~* -1.3 ~== 1.56"
++0 blStt               __compare True
+
++1 calculateLineString __set "~^=λ x,y:(x^y)%2; -2 ~^ 2 ~== 0"
++0 blStt               __compare True
+
++1 calculateLineString __set "~/=λ x,y:(x/y)%2; -1 ~/ 2 ~== 1.5"
++0 blStt               __compare True
+
++1 calculateLineString __set "~-=λ x,y:(x-y)%2; -1 ~- 2 == 1"
++0 blStt               __compare True
+
++1 calculateLineString __set "~+=λ x,y:(x+y)%2; -1 ~+ -2 == 1"
++0 blStt               __compare True
+
++1 calculateLineString __set "3.-999 == -996"
++0 blStt               __compare True
++1 calculateLineString __set "3-999 == -996"
++0 blStt               __compare True
++1 calculateLineString __set "a=3; a-999 == -996"
++0 blStt               __compare True
+
+
+
++1 __end

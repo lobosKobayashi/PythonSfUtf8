@@ -1,0 +1,516 @@
+#english:
+#    PythonSf testOctn.vrf
+#    https://github.com/lobosKobayashi
+#    http://lobosKobayashi.github.com/
+#    
+#    Copyright 2016, Kenji Kobayashi
+#    All test codes in this file was designed by kVerifierLab Kenji Kobayashi
+#
+#    I release souce codes in this file under the GPLv3
+#    with the exception of my commercial uses.
+#
+#    2016y 12m 28d Kenji Kokbayashi
+#
+#japanese:
+#    PythonSf testOctn.vrf
+#    https://github.com/lobosKobayashi
+#    http://lobosKobayashi.github.com/
+#
+#    Copyright 2016, Kenji Kobayashi
+#    このファイルの全てのテスト・コードは kVerifierLab 小林憲次が作成しました。
+#    
+#    作成者の小林本人に限っては商用利用を許すとの例外条件を追加して、
+#    このファイルのソースを GPLv3 で公開します。
+#
+#    2016年 12月 28日 小林憲次
+
+# 13.10.05 add .d member to ClOcternion
+## Ticket Serial Num: 00008
++1 calculateLineString __set "exp.d(`i pi/3) ~== (cos + `i sin).d(pi/3)"
++0 blStt               __compare True
+
+# 10.10.18 octn.py の ClOctonion, BF, Zp に __ne__ がなかったので追加する
++1 calculateLineString __set "O=oc.Oc; O(3)!=3"
++0 blStt               __compare False
++1 calculateLineString __set "O=oc.Oc; O(3)!=4"
++0 blStt               __compare True
++1 calculateLineString __set "O=oc.Oc; O(3)!=O(3)"
++0 blStt               __compare False
++1 calculateLineString __set "O=oc.Oc; O(3)!=O(4)"
++0 blStt               __compare True
+
++1 calculateLineString __set "B=oc.BF; B(1)!=1"
++0 blStt               __compare False
++1 calculateLineString __set "B=oc.BF; B(1)!=1.0"
++0 blStt               __compare False
++1 calculateLineString __set "O=oc.BF; B(1)!=0"
++0 blStt               __compare True
++1 calculateLineString __set "O=oc.BF; B(1)!=0.0"
++0 blStt               __compare True
++1 calculateLineString __set "O=oc.BF; B(0)!=0.0"
++0 blStt               __compare False
++1 calculateLineString __set "O=oc.BF; B(0)!=None"
+# `0 == None が False なので合わせる
+#+0 blStt               __compare False
++0 blStt               __compare True
++1 calculateLineString __set "O=oc.BF; B(1)!=B(1)"
++0 blStt               __compare False
++1 calculateLineString __set "O=oc.BF; B(1)!=B(0)"
++0 blStt               __compare True
+
++1 calculateLineString __set "Z5=oc.Zp(5); Z5(1)!=1"
++0 blStt               __compare False
++1 calculateLineString __set "Z5=oc.Zp(5); Z5(1)!=0"
++0 blStt               __compare True
++1 calculateLineString __set "Z5=oc.Zp(5); Z5(1)!=Z5(1)"
++0 blStt               __compare False
++1 calculateLineString __set "Z5=oc.Zp(5); Z5(1)!=Z5(0)"
++0 blStt               __compare True
+
+# 10.10.18 Octonion に __ne__ が定義されていなかった
+# O(4) != O(4) が True になっていた
++1 calculateLineString __set "O=oc.Oc; [O(4) == O(x) for x in range(5)] == [False, False, False, False, True]"
++0 blStt               __compare True
+
++1 calculateLineString __set "O=oc.Oc; [O(4) != O(x) for x in range(5)] == [True, True, True, True, False]"
++0 blStt               __compare True
+
+# 10.10.12 Zp(5) に float 値を入れると %2 の値になっていた。Zp(5)(19.0)==1 だった
++1 calculateLineString __set "oc.Zp(5)(19.0) == 4"
++0 blStt               __compare True
+
+
+# 10.10.11 ClOctonion に conj() method を追加した
++1 calculateLineString __set "O=oc.Oc; O(0,1,2,3,4,5,6,7).conj() == O(0,-1,-2,-3,-4,-5,-6,-7)"
++0 blStt               __compare True
+
+# 10.10.09 octn.py:ClOctonion に __getitem__(self, *ag) method を追加した
++1 calculateLineString __set "O=oc.Oc; O(0,1,2,3,4,5,6,7)[-4:] ==(4, 5, 6, 7)"
++0 blStt               __compare True
+
++1 calculateLineString __set "O=oc.Oc; O(0,1,2,3,4,5,6,7)[:] ==(0,1,2,3,4,5,6,7)"
++0 blStt               __compare True
+
++1 calculateLineString __set "O=oc.Oc; O(0,1,2,3,4,5,6,7)[:4] ==(0,1,2,3)"
++0 blStt               __compare True
+
++1 calculateLineString __set "O=oc.Oc; O(0,1,2,3)[:2] ==(0,1)"
++0 blStt               __compare True
+
++1 calculateLineString __set "O=oc.Oc; O(0,1,2,3)[2] ==2"
++0 blStt               __compare True
+
+
+# 10.04.11  Octonion で演算表に符号ミスが入り込んでいた
+# <== 下の norm が 0.968245836552 になっていた
++1 calculateLineString __set "ω=oc.ClOctonion(1,1,1,1, 1,1,1,1)/sqrt(8); norm(ω^2)"
++0 scalarStt           __compare 1
+
+# 09.09.21
+# Sn(N) cash を追加する。
+# oc.Sn(5)(0, 3, 1, 4, 2) oc.Sn(5)(0, 2, 4, 1, 3) の積演算で例外エラーだった
+# <== 一項めと、二項めで、同じに見えても異なるクラスを使っているためだった
+# <== Sn(..) 関数にクラスのキャッシュ作り、同じクラスは共通にする
++1 calculateLineString __set "oc.Sn(5)(0, 3, 1, 4, 2) oc.Sn(5)(0, 2, 4, 1, 3) == oc.Sn(5)(0, 1, 2, 3, 4)"
++0 blStt               __compare True
+
+# 置換群なのに置換数値を計算できないのはおかしい。 def __getitem__() を追加
++1 calculateLineString __set "oc.Sn(5)(0, 3, 1, 4, 2)[2]"
++0 inStt               __compare 1
+
+# m_tplIdxStt 要素はタプルです。要素を集合とする setStt を追加します
++1 calculateLineString __set "oc.Sn(5)(0, 1, 2, 3, 4) in oc.Sn(5).setStt"
++0 blStt               __compare True
+
+
+# 09.09.16 Zp.__init__(self,ag) が拙くて N= 5;Z=oc.Zp(N);x=3;Z(x)^(N-1) が 2 になっていた
++1 calculateLineString __set "N= 5;Z=oc.Zp(N);x=3;Z(x)^(N-1) == 1"
++0 blStt               __compare True
+
+# 09.09.15 oc.Sn(N) に __ne__ を定義していないので != 演算ができなかった
++1 calculateLineString __set "S3=oc.Sn(3);S3(0,1,2) != S3(0,1,2)"
++0 blStt               __compare False
+
+# 09.09.11 0-oc.BF(1) で 
+# TypeError: unsupported operand type(s) for -: 'int' and 'BF'
+# になっていた
++1 calculateLineString __set "0-oc.BF(1) == oc.BF(1)"
++0 blStt               __compare True
+
+# 09.09.07 oc.BF に __neg__ を定義していなかった
++1 calculateLineString __set "-`1 == `1"
++0 blStt               __compare True
+
+# 09.09.07 oc.Pl に sub を定義していなかった
++1 calculateLineString __set "oc.Pl(1,2,3) - oc.Pl(1,1,1) == oc.Pl(1,2)"
++0 blStt               __compare True
+
++1 calculateLineString __set "1 - oc.Pl(1,1,1) == oc.Pl(-1,-1,0)"
++0 blStt               __compare True
+
++1 calculateLineString __set "-oc.Pl(1,2,3) == oc.Pl(-1,-2,-3)"
++0 blStt               __compare True
+
+
+# 09.08.14 Sn の逆元が浮動小数点に変わっている
++1 calculateLineString __set "S4 =oc.Sn(4); s=S4(1,2,3,0);isinstance((s^-1).m_idx[0],int)"
++0 blStt               __compare True
+
++1 calculateLineString __set "S4 =oc.Sn(4); s=S4(1,2,3,0);isinstance(s.inv().m_idx[0],int)"
++0 blStt               __compare True
+
+# 09.08.12 product を追加した
++1 calculateLineString __set "product([1,2,3,4,5]) == 120"
++0 blStt               __compare True
+
+# 09.08.12 octn 内のクラス・インスタンスについて hash と id が同じ値であり、集合に関数演算
+# 誤った結果になっていた
++1 calculateLineString __set "len( set([oc.RS(1), oc.RS(2), oc.RS(2)]) )==2"
++0 blStt               __compare True
+
++1 calculateLineString __set "hash(oc.RS(2)) != id( oc.RS(2) )"
++0 blStt               __compare True
+
++1 calculateLineString __set "hash(oc.Oc(2)) != id( oc.Oc(2) )"
++0 blStt               __compare True
++1 calculateLineString __set "hash(oc.Oc(3)) == hash( oc.Oc(1)+oc.Oc(2) )"
++0 blStt               __compare True
+
++1 calculateLineString __set "Z5=oc.Zp(5);hash(Z5(2)) != id( Z5(2) )"
++0 blStt               __compare True
++1 calculateLineString __set "Z5=oc.Zp(5);hash(Z5(3)) == hash( Z5(1)+Z5(2) )"
++0 blStt               __compare True
+
++1 calculateLineString __set "hash(oc.BF(1)) != id( oc.BF(1) )"
++0 blStt               __compare True
++1 calculateLineString __set "hash(oc.BF(1)) == hash( oc.BF(0)+oc.BF(1) )"
++0 blStt               __compare True
+
++1 calculateLineString __set "S3=oc.Sn(3);hash(S3(0,1,2)) != id( S3(0,1,2) )"
++0 blStt               __compare True
++1 calculateLineString __set "S3=oc.Sn(3);hash(S3(2,0,1)) == hash( S3(0,1,2) S3(2,0,1) )"
++0 blStt               __compare True
+
+
+# 09.06.24 oc.Pl(..) が予定外の値を返している。 g(1) は numpy.int32 を返す
++1 calculateLineString __set "g = oc.Pl(oc.RS(1), oc.RS(1));g(oc.RS(1)) == oc.RS(0)"
++0 blStt               __compare True
+
++1 calculateLineString __set "g = oc.Pl(1,2);g(1)"
++0 inStt               __compare 3
+
+# 09.04.13 ClOctn で ClOctonion(0,1)/ClOctonion(0,1) が -1になっていた
++1 calculateLineString __set "import octn as oc;O = oc.ClOctonion;(O(0,1)/O(0,1)).m_tpl == (1,0,0,0, 0,0,0,0)"
++0 blStt               __compare True
+
+#testOctn.vrf::sfShot.jot.09.03.29 体の定義一般のテスト・コード
++1 calculateLineString __set "x = oc.ClOctonion(1,2,3,4,5,6,7,8); 0 + x == x"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.ClOctonion(1,2,3,4,5,6,7,8); x + 0 == x"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.ClOctonion(1,2,3,4,5,6,7,8); 0   x == 0"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.ClOctonion(1,2,3,4,5,6,7,8); x   0 == 0"
++0 blStt               __compare True
+
++1 calculateLineString __set "x = oc.ClOctonion(1,2,3,4,5,6,7,8); 0 - x ==-x"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.ClOctonion(1,2,3,4,5,6,7,8); x - 0 == x"
++0 blStt               __compare True
+
++1 calculateLineString __set "x = oc.ClOctonion(1,2,3,4,5,6,7,8); 1   x == x"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.ClOctonion(1,2,3,4,5,6,7,8); x   1 == x"
++0 blStt               __compare True
+
++1 calculateLineString __set "x = oc.ClOctonion(1,2,3,4,5,6,7,8); 1 / x == x^-1"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.ClOctonion(1,2,3,4,5,6,7,8); x / 1 == x"
++0 blStt               __compare True
+
++1 calculateLineString __set "x = oc.ClOctonion(1,2,3,4,5,6,7,8); x == (1,2,3,4,5,6,7,8)"
++0 blStt               __compare False
++1 calculateLineString __set "x = oc.ClOctonion(1,2,3,4,5,6,7,8); x == [1,2,3,4,5,6,7,8]"
++0 blStt               __compare False
+
+
++1 calculateLineString __set "x = oc.RS(3); 0 + x == x"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.RS(3); x + 0 == x"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.RS(3); 0   x == 0"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.RS(3); x   0 == 0"
++0 blStt               __compare True
+
++1 calculateLineString __set "x = oc.RS(3); 0 - x ==-x"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.RS(3); x - 0 == x"
++0 blStt               __compare True
+
++1 calculateLineString __set "x = oc.RS(3); 1   x == x"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.RS(3); x   1 == x"
++0 blStt               __compare True
+
++1 calculateLineString __set "x = oc.RS(3); 1 / x == x^-1"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.RS(3); x / 1 == x"
++0 blStt               __compare True
+
++1 calculateLineString __set "x = oc.RS(2); x == 2"
++0 blStt               __compare True
++1 calculateLineString __set "x = oc.RS(4); x == 4"
++0 blStt               __compare True
+
+
++1 calculateLineString __set "Z5=oc.Zp(5);x = Z5(3); 0 + x == x"
++0 blStt               __compare True
++1 calculateLineString __set "Z5=oc.Zp(5);x = Z5(3); x + 0 == x"
++0 blStt               __compare True
++1 calculateLineString __set "Z5=oc.Zp(5);x = Z5(3); 0   x == 0"
++0 blStt               __compare True
++1 calculateLineString __set "Z5=oc.Zp(5);x = Z5(3); x   0 == 0"
++0 blStt               __compare True
+
++1 calculateLineString __set "Z5=oc.Zp(5);x = Z5(3); 0 - x ==-x"
++0 blStt               __compare True
++1 calculateLineString __set "Z5=oc.Zp(5);x = Z5(3); x - 0 == x"
++0 blStt               __compare True
+
++1 calculateLineString __set "Z5=oc.Zp(5);x = Z5(3); 1   x == x"
++0 blStt               __compare True
++1 calculateLineString __set "Z5=oc.Zp(5);x = Z5(3); x   1 == x"
++0 blStt               __compare True
+
++1 calculateLineString __set "Z5=oc.Zp(5);x = Z5(3); 1 / x == x^-1"
++0 blStt               __compare True
++1 calculateLineString __set "Z5=oc.Zp(5);x = Z5(3); x / 1 == x"
++0 blStt               __compare True
+
++1 calculateLineString __set "Z5=oc.Zp(5);x = Z5(2); x == 2"
++0 blStt               __compare True
++1 calculateLineString __set "Z5=oc.Zp(5);x = Z5(4); x == 4"
++0 blStt               __compare True
+
+
+
+# 13.01.24 Oc(1,2)==[1,2], Oc(1,2)==(1,2) を False になるように変更した。
+#     (1,2)==Oc(1,2)==[1,2] が True だと (1,2) == [1,2] も True にすることになるから
+# 09.03.20 sf.krry([oc.RS(0), oc.RS(1)]) を定義できていなかった
+# 09.03.31 dtype, ftype を使って ClTensor, ClFldTns を区別して生成できるよう
+# に修正したので、bool, int, long, float, complex 以外は、型指定がないとき
+# ClFldTns にするよう変更した
+#+1 calculateLineString __set "type(~[oc.RS(0), oc.RS(1)])== ClTensor"
++1 calculateLineString __set "type(~[oc.RS(0), oc.RS(1)])== ClFldTns"
++0 blStt               __compare True
++1 calculateLineString __set "(~[oc.RS(0), oc.RS(1)])[1]== oc.RS(1)"
++0 blStt               __compare True
+
+#+1 calculateLineString __set "O=oc.ClOctonion; type(~[O(0),O(1),O(3)]) == ClTensor"
++1 calculateLineString __set "O=oc.ClOctonion; type(~[O(0),O(1),O(3)]) == ClFldTns"
++0 blStt               __compare True
+
++1 calculateLineString __set "O=oc.ClOctonion; (~[O(0),O(1),O(3)])[1] == 1"
++0 blStt               __compare True
+
+# 09.03.20 
++1 calculateLineString __set "O=oc.Oc;oAt = O(1,2,3) + (1,2);oAt == [2,4,3]"
++0 blStt               __compare False
+
++1 calculateLineString __set "O=oc.Oc;oAt = (1,2) + O(1,2,3);oAt == [2,4,3]"
++0 blStt               __compare False
+
++1 calculateLineString __set "O=oc.Oc;O(1,2,3) + 0 == [1,2,3]"
++0 blStt               __compare False
+
++1 calculateLineString __set "O=oc.Oc;0+ O(1,2,3) == [1,2,3]"
++0 blStt               __compare False
+
++1 calculateLineString __set "O=oc.Oc;O(1,2,3)* 1 == [1,2,3]"
++0 blStt               __compare False
+
++1 calculateLineString __set "O=oc.Oc;1*O(1,2,3) == [1,2,3]"
++0 blStt               __compare False
+
++1 calculateLineString __set "(oc.Pl([1,2,3]) + 0).coeffs ==~[1,2,3]"
++0 blStt               __compare True
+
++1 calculateLineString __set "oc.Pl([1,2,3]) + 0 == oc.Pl(1,2,3)"
++0 blStt               __compare True
+
++1 calculateLineString __set "(0 + oc.Pl([1,2,3])).coeffs == ~[1,2,3]"
++0 blStt               __compare True
++1 calculateLineString __set "0 + oc.Pl([1,2,3]) == oc.Pl(1,2,3)"
++0 blStt               __compare True
+
++1 calculateLineString __set "oc.Pl([1,2,3]) * 1 == oc.Pl(1,2,3)"
++0 blStt               __compare True
+
++1 calculateLineString __set "0 + oc.Pl([1,2,3]) == oc.Pl(1,2,3)"
++0 blStt               __compare True
+
+
++1 calculateLineString __set "oc.Pm([1,2,3]) + 0 == oc.Pm(1,2,3)"
++0 blStt               __compare True
+
++1 calculateLineString __set "0 + oc.Pm([1,2,3]) == oc.Pm(1,2,3)"
++0 blStt               __compare True
+
++1 calculateLineString __set "oc.Pm([1,2,3]) * 1 == oc.Pm(1,2,3)"
++0 blStt               __compare True
+
++1 calculateLineString __set "0 + oc.Pm([1,2,3]) == oc.Pm(1,2,3)"
++0 blStt               __compare True
+
+# oc.BF インスタンス 1,0 との演算は保証する。でも 1, 0 は BF タイプではない
+
++1 calculateLineString __set "1 + oc.BF(1) == 0"
++0 blStt               __compare True
+
++1 calculateLineString __set "oc.BF(1) + 1 == 0"
++0 blStt               __compare True
+
++1 calculateLineString __set "0 + oc.BF(1) == 1"
++0 blStt               __compare True
+
++1 calculateLineString __set "oc.BF(1) + 0 == 1"
++0 blStt               __compare True
+
++1 calculateLineString __set "1 * oc.BF(1) == 1"
++0 blStt               __compare True
+
++1 calculateLineString __set "oc.BF(1) * 1 == 1"
++0 blStt               __compare True
+
++1 calculateLineString __set "0 * oc.BF(1) == 0"
++0 blStt               __compare True
+
++1 calculateLineString __set "oc.BF(1) * 0 == 0"
++0 blStt               __compare True
+
++1 calculateLineString __set "isinstance(1, oc.BF)"
++0 blStt               __compare False
+
+
+# 09.03.14 (`P^4/(`P4 + `P + 1)) の計算結果の variable が 'x' に戻っていた
++1 calculateLineString __set "str((`P^4/(`P^4 + `P + 1))[1])"
++0 strStt              __compare "`P+1"
+
++1 calculateLineString __set "str((z_^4/(z_^4 + z_ + 1))[1])"
++0 strStt              __compare "1+z_"
+
+# 09.03.13 float が入っている ~[`σx, oc.RS] がエラーになっていた
++1 calculateLineString __set "valAt=~[`σx, oc.RS][0,1];(valAt == oc.RS(1)) and isinstance(valAt, oc.RS)"
++0 blStt               __compare True
+
++1 calculateLineString __set "valAt=(1/~[`σx, oc.RS])[0,1];(valAt == oc.RS(1)) and isinstance(valAt, oc.RS)"
+
+# 09.03.12 
++1 calculateLineString __set "fz=1+z_+z_^2; (fz(0), fz(1)) ==(1 ,1)"
++0 blStt               __compare True
+
++1 calculateLineString __set "fz=1+`P+`P^2; (fz(0), fz(1)) ==(1 ,1)"
++0 blStt               __compare True
+
++1 calculateLineString __set "str(`P^4+`P^3+`P^2+`P+1)"
++0 strStt              __compare "`P^4+`P^3+`P^2+`P+1"
+
+# 09.03.09 Pm の __str__ を一行表示に変更した<== テストを後回しにする
+# 一行表示でないと、多項式要素の行列表示処理が面倒になる
+# z_^2 が x^2 になっていた
+# 昇順表示に変更した 
++1 calculateLineString __set "str(z_^2) == 'z_^2'"
++0 blStt               __compare True
++1 calculateLineString __set "str((z_^3+z_+1) Z_([1,0,1,1]))"
++0 strStt              __compare "1+z_^2+z_^6"
+#+1 calculateLineString __set "str((z_^3+z_+1) (1+z_ + z_^3))"
++0 strStt              __compare "1+z_^2+z_^6"
+
+# 09.03.09 Pm に __len__  を追加した。
++1 calculateLineString __set "len(1 + z_^2 + z_^3)"
++0 inStt                __compare 3
+
+# 09.03.09 Pm に __iter__  を追加した。
++1 calculateLineString __set "norm(1 + z_^2 + z_^3)^2"
++0 scalarStt            __compare 3
+
++1 calculateLineString __set "(z_^3+ 1).coeffs[3] == 1"
+
+# 09.03.09 Pm に __getattr__/coeffs  を追加した。
++1 calculateLineString __set "(z_^3+ 1).coeffs[3] == 1"
++0 blStt               __compare True
+
+# 09.03.03 test Pm
+# 2 * `1 が定義されていなかった
++1 calculateLineString __set "(2 `1) == `0"
++0 blStt               __compare True
+
+# sclar + Pm が定義されていなかった
++1 calculateLineString __set "(1+ z_).coeffs[0] == 1"
++0 blStt               __compare True
+# sclar * Pm が定義されていなかった
++1 calculateLineString __set "(2 z_).coeffs[0] == 2"
++0 blStt               __compare True
+
+# 09.01.13 
++1 calculateLineString __set "Z=oc.Zp(5);cl=Z(1)/Z(2);cl.m_val"
++0 inStt               __compare 3
+
++1 calculateLineString __set "Z=oc.Zp(5);cl=Z(3)/Z(2);cl.m_val"
++0 inStt               __compare 4
+
+# 08.11.29 
++1 calculateLineString __set "S=oc.Sn(3);S(1,0,2).inv() ==  S(2,0,1)"
++1 calculateLineString __set "S=oc.Sn(3);S(0,2,1).inv() ==  S(0,2,1)"
++1 calculateLineString __set "S=oc.Sn(3);S(1,0,2) S([1,0,2]) == S(0,1,2)"
++0 blStt               __compare True
+
++1 calculateLineString __set "Z=oc.Zp(7);Z(2)+Z(5) == Z(0)"
++0 blStt               __compare True
+
+# 08.11.26 oc.Zp で m_val が long になりにくくするよう int(..) cast を追加した
++1 calculateLineString __set "Z=oc.Zp(3);isinstance(Z(2^31).m_val, int)"
++0 blStt               __compare True
+
+# 08.11.25 Zp inv:逆減の計算が一つずれていた
++1 calculateLineString __set "Z=oc.Zp(7); int(Z(6) Z(6)^-1)"
++0 inStt               __compare 1
+
++1 calculateLineString __set "(oc.RS(2)^3 oc.RS(2)^-3).m_val"
++0 inStt               __compare 1
+
++1 calculateLineString __set "(oc.RS(2) oc.RS(2)^-1).m_val"
++0 inStt               __compare 1
+
++1 calculateLineString __set "x=oc.RS(2).inv();x.m_val"
+#×+0 inStt               __compare 0x47
+#×+0 inStt               __compare 71
++0 inStt               __compare 0x8e
+#+0 inStt               __compare 142
+
++1 calculateLineString __set "x=oc.RS(2) oc.RS(2);x.m_val"
++0 inStt               __compare 4
+
++1 calculateLineString __set "x=oc.RS(1) oc.RS(2);x.m_val"
++0 inStt               __compare 2
+
++1 calculateLineString __set "x=oc.RS(0x47) oc.RS(0x04);x.m_val"
++0 inStt               __compare 1
+
++1 calculateLineString __set "x=oc.RS(0x2) oc.RS(0x04);x.m_val"
++0 inStt               __compare 8
+
++1 calculateLineString __set "x=oc.RS(0x8e) oc.RS(0x02);x.m_val"
++0 inStt               __compare 1
+
++1 calculateLineString __set "x=oc.RS(1);x.inv().m_val"
++0 inStt               __compare 1
++1 __end
+
++0 blStt               __compare True
+
+[hex(oc.RS.m_lstPwrStt[k]) for k in range(255)]
+['0x1', '0x2', '0x4', '0x8', '0x10', '0x20', '0x40', '0x80', '0x1d', '0x3a', '0x74', '0xe8', '0xcd', '0x87', '0x13', '0x26', '0x4c', '0x98', '0x2d', '0x5a', '0xb4', '0x75', '0xea', '0xc9', '0x8f', '0x3', '0x6', '0xc', '0x18', '0x30', '0x60', '0xc0', '0x9d', '0x27', '0x4e', '0x9c', '0x25', '0x4a', '0x94', '0x35', '0x6a', '0xd4', '0xb5', '0x77', '0xee', '0xc1', '0x9f', '0x23', '0x46', '0x8c', '0x5', '0xa', '0x14', '0x28', '0x50', '0xa0', '0x5d', '0xba', '0x69', '0xd2', '0xb9', '0x6f', '0xde', '0xa1', '0x5f', '0xbe', '0x61', '0xc2', '0x99', '0x2f', '0x5e', '0xbc', '0x65', '0xca', '0x89', '0xf', '0x1e', '0x3c', '0x78', '0xf0', '0xfd', '0xe7', '0xd3', '0xbb', '0x6b', '0xd6', '0xb1', '0x7f', '0xfe', '0xe1', '0xdf', '0xa3', '0x5b', '0xb6', '0x71', '0xe2', '0xd9', '0xaf', '0x43', '0x86', '0x11', '0x22', '0x44', '0x88', '0xd', '0x1a', '0x34', '0x68', '0xd0', '0xbd', '0x67', '0xce', '0x81', '0x1f', '0x3e', '0x7c', '0xf8', '0xed', '0xc7', '0x93', '0x3b', '0x76', '0xec', '0xc5', '0x97', '0x33', '0x66', '0xcc', '0x85', '0x17', '0x2e', '0x5c', '0xb8', '0x6d', '0xda', '0xa9', '0x4f', '0x9e', '0x21', '0x42', '0x84', '0x15', '0x2a', '0x54', '0xa8', '0x4d', '0x9a', '0x29', '0x52', '0xa4', '0x55', '0xaa', '0x49', '0x92', '0x39', '0x72', '0xe4', '0xd5', '0xb7', '0x73', '0xe6', '0xd1', '0xbf', '0x63', '0xc6', '0x91', '0x3f', '0x7e', '0xfc', '0xe5', '0xd7', '0xb3', '0x7b', '0xf6', '0xf1', '0xff', '0xe3', '0xdb', '0xab', '0x4b', '0x96', '0x31', '0x62', '0xc4', '0x95', '0x37', '0x6e', '0xdc', '0xa5', '0x57', '0xae', '0x41', '0x82', '0x19', '0x32', '0x64', '0xc8', '0x8d', '0x7', '0xe', '0x1c', '0x38', '0x70', '0xe0', '0xdd', '0xa7', '0x53', '0xa6', '0x51', '0xa2', '0x59', '0xb2', '0x79', '0xf2', '0xf9', '0xef', '0xc3', '0x9b', '0x2b', '0x56', '0xac', '0x45', '0x8a', '0x9', '0x12', '0x24', '0x48', '0x90', '0x3d', '0x7a', '0xf4', '0xf5', '0xf7', '0xf3', '0xfb', '0xeb', '0xcb', '0x8b', '0xb', '0x16', '0x2c', '0x58', '0xb0', '0x7d', '0xfa', '0xe9', '0xcf', '0x83', '0x1b', '0x36', '0x6c', '0xd8', '0xad', '0x47', '0x8e']
+
+α ≡ 0x02

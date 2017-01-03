@@ -1,0 +1,59 @@
+#english:
+#    PythonSf testSym.vrf
+#    https://github.com/lobosKobayashi
+#    http://lobosKobayashi.github.com/
+#    
+#    Copyright 2016, Kenji Kobayashi
+#    All test codes in this file was designed by kVerifierLab Kenji Kobayashi
+#
+#    I release souce codes in this file under the GPLv3
+#    with the exception of my commercial uses.
+#
+#    2016y 12m 28d Kenji Kokbayashi
+#
+#japanese:
+#    PythonSf testSym.vrf
+#    https://github.com/lobosKobayashi
+#    http://lobosKobayashi.github.com/
+#
+#    Copyright 2016, Kenji Kobayashi
+#    このファイルの全てのテスト・コードは kVerifierLab 小林憲次が作成しました。
+#    
+#    作成者の小林本人に限っては商用利用を許すとの例外条件を追加して、
+#    このファイルのソースを GPLv3 で公開します。
+#
+#    2016年 12月 28日 小林憲次
+
+# 09.06.30 Float(ts.sin(`x), 0.5) が 0.5の値を返している。 0.479425538604 が正しい
++1 calculateLineString __set "Float(ts.sin(`q), 0.5)"
++0 scalarStt           __compare 0.479425
++1 calculateLineString __set "Float(ts.sin(`p), 0.5)"
++0 scalarStt           __compare 0.479425
++1 calculateLineString __set "Float(ts.sin(`t), 0.5)"
++0 scalarStt           __compare 0.479425
++1 calculateLineString __set "Float(ts.sin(`z), 0.5)"
++0 scalarStt           __compare 0.479425
++1 calculateLineString __set "Float(ts.sin(`y), 0.5)"
++0 scalarStt           __compare 0.479425
++1 calculateLineString __set "Float(ts.sin(`x), 0.5)"
++0 scalarStt           __compare 0.479425
+
++1 calculateLineString __set "Float(ts.sin(`q/2), 1)"
++0 scalarStt           __compare 0.479425
++1 calculateLineString __set "Float(ts.sin(`p/2), 1)"
++0 scalarStt           __compare 0.479425
++1 calculateLineString __set "Float(ts.sin(`t/2), 1)"
++0 scalarStt           __compare 0.479425
++1 calculateLineString __set "Float(ts.sin(`z/2), 1)"
++0 scalarStt           __compare 0.479425
++1 calculateLineString __set "Float(ts.sin(`y/2), 1)"
++0 scalarStt           __compare 0.479425
++1 calculateLineString __set "Float(ts.sin(`x/2), 1)"
++0 scalarStt           __compare 0.479425
+
++1 calculateLineString __set "Float(ts.sin(`x/2+`y), 0.4, 0.3)"
++0 scalarStt           __compare 0.479425
++1 calculateLineString __set "Float(ts.sin(`y/2+`z), 0.4, 0.3)"
++0 scalarStt           __compare 0.479425
++1 calculateLineString __set "Float(ts.sin(`t/2+`z), 0.4, 0.3)"
++0 scalarStt           __compare 0.479425
